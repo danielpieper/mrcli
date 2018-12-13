@@ -1,0 +1,47 @@
+{
+  "name": "danielpieper/mrcli",
+  "description": "A simple cli app to announce merge requests to slack",
+  "keywords": [
+    "merge request",
+    "slack",
+    "gitlab"
+  ],
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Daniel Pieper",
+      "email": "github@daniel-pieper.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "DanielPieper\\MergeReminder\\": "src"
+    }
+  },
+  "require-dev": {
+    "infection/infection": "^0.7.0",
+    "phpunit/phpunit": "^7.0",
+    "fzaninotto/faker": "^1.7",
+    "squizlabs/php_codesniffer": "^3.2.2",
+    "phpmd/phpmd": "^2.6.0",
+    "sebastian/phpcpd": "^4.0.0"
+  },
+  "require": {
+    "php": "^7.2",
+    "ext-iconv": "*",
+    "ext-curl": "*",
+    "ext-intl": "*",
+    "symfony/console": "^4.0.4",
+    "symfony/config": "^4.0.4",
+    "symfony/yaml": "^4.0.4",
+    "symfony/finder": "^4.0.4",
+    "php-http/curl-client": "^1.7",
+    "m4tthumphrey/php-gitlab-api": "^9.11",
+    "mpociot/slack-client": "^1.2"
+  },
+  "minimum-stability": "stable",
+  "bin": [
+    "bin/mrcli"
+  ]
+}
