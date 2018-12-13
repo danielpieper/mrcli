@@ -43,7 +43,7 @@ class Project
     /**
      * @return int
      */
-    public function id(): int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -51,7 +51,7 @@ class Project
     /**
      * @return string
      */
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
     }

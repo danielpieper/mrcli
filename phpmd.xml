@@ -6,12 +6,33 @@
          xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
     <description>Description of your coding standard</description>
 
+
     <rule ref="rulesets/cleancode.xml">
         <!-- Excluding static-access since it generates a lot of false-positives on namespaced classes -->
         <exclude name="StaticAccess" />
     </rule>
-    <rule ref="rulesets/codesize.xml" />
+
+
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity" />
+    <rule ref="rulesets/codesize.xml/NPathComplexity" />
+    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength" />
+    <rule ref="rulesets/codesize.xml/ExcessiveClassLength" />
+    <rule ref="rulesets/codesize.xml/ExcessiveParameterList" />
+    <rule ref="rulesets/codesize.xml/ExcessivePublicCount" />
+    <rule ref="rulesets/codesize.xml/TooManyFields" />
+    <rule ref="rulesets/codesize.xml/TooManyMethods" />
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <properties>
+            <property name="ignorepattern" value="(^(set|get|is))i" />
+
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity" />
+
+
     <rule ref="rulesets/controversial.xml" />
+
+
     <rule ref="rulesets/design.xml">
         <exclude name="CouplingBetweenObjects" />
     </rule>
@@ -20,6 +41,8 @@
             <property name="minimum" value="15" />
         </properties>
     </rule>
+
+
     <rule ref="rulesets/naming.xml/ShortVariable">
         <properties>
             <!--
@@ -30,18 +53,17 @@
             <property name="minimum" value="3" />
         </properties>
     </rule>
-
     <rule ref="rulesets/naming.xml/LongVariable">
         <properties>
             <property name="maximum" value="30" />
         </properties>
     </rule>
-
     <rule ref="rulesets/naming.xml/BooleanGetMethodName">
         <properties>
             <property name="checkParameterizedMethods" value="true" />
         </properties>
     </rule>
+
 
     <rule ref="rulesets/unusedcode.xml" />
 </ruleset>

@@ -4,6 +4,7 @@ namespace DanielPieper\MergeReminder\Command;
 
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
+use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,6 +43,7 @@ class MergeRequestsCommand extends BaseCommand
             $projects[] = $projectService->get($gitlabProjectId);
         }
 
+        /** @var MergeRequest[] $mergeRequests */
         $mergeRequests = [];
         foreach ($projects as $project) {
             $mergeRequests = array_merge($mergeRequests, $mergeRequestService->all($project));
@@ -50,8 +52,10 @@ class MergeRequestsCommand extends BaseCommand
         $rows = [];
         foreach ($mergeRequests as $mergeRequest) {
             $rows[] = [
-                $mergeRequest->project()->name(),
-                $mergeRequest->title(),
+                $mergeRequest->getProject()->getName(),
+                $mergeRequest->getTitle(),
+                $mergeRequest->getAuthor()->getUsername(),
+                $mergeRequest->getAssignee()->getUsername(),
             ];
         }
 
@@ -62,8 +66,9 @@ class MergeRequestsCommand extends BaseCommand
 
          $table = new Table($output);
          $table
-            ->setHeaders(['Project', 'Name'])
-            ->setRows($rows) ;
+             ->setHeaderTitle('Merge requests')
+             ->setHeaders(['Project', 'Title', 'Author', 'Assignee'])
+             ->setRows($rows) ;
         $table->render();
     }
 }

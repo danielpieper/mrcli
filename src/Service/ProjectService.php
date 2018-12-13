@@ -28,4 +28,16 @@ class ProjectService
         }
         return Project::fromArray($project);
     }
+
+    /**
+     * @return Project[]
+     */
+    public function all(): array
+    {
+        $projects = $this->gitlabClient->projects()->all();
+
+        return array_map(function ($project) {
+            return Project::fromArray($project);
+        }, $projects);
+    }
 }
