@@ -2347,16 +2347,16 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "2.10.2",
+            "version": "2.10.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9"
+                "reference": "9adc62f3aeca92ae2354435b8f466ccbec316dd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9",
-                "reference": "38109ed7d8e46cfa71bccbe7e6ca80cdd035f8c9",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/9adc62f3aeca92ae2354435b8f466ccbec316dd6",
+                "reference": "9adc62f3aeca92ae2354435b8f466ccbec316dd6",
                 "shasum": ""
             },
             "require": {
@@ -2414,7 +2414,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2018-02-01T17:05:33+00:00"
+            "time": "2018-12-13T17:15:31+00:00"
         }
     ],
     "packages-dev": [

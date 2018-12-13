@@ -53,10 +53,6 @@ class BaseCommand extends Command
         $home = (string)getenv('HOME');
         if (!empty($home)) {
             $home = rtrim($home, '/');
-        } elseif (!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) {
-            // home on windows
-            $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
-            $home = rtrim($home, '\\/');
         }
         return empty($home) ? null : $home;
     }

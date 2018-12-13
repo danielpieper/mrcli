@@ -2,6 +2,9 @@
 
 namespace DanielPieper\MergeReminder\Command;
 
+use DanielPieper\MergeReminder\Service\MergeRequestService;
+use DanielPieper\MergeReminder\Service\ProjectService;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,19 +34,36 @@ class MergeRequestsCommand extends BaseCommand
             \Gitlab\Client::AUTH_URL_TOKEN
         );
 
-        $projects = $client->projects()->all([
-            'with_merge_requests_enabled' => true,
-            'membership' => true,
-        ]);
+        $projectService = new ProjectService($client);
+        $mergeRequestService = new MergeRequestService($client);
 
-        foreach ($projects as $project) {
-            $output->writeln($project['id'] . ' ' . $project['name']);
+        $projects = [];
+        foreach ($config['gitlab_projects'] as $gitlabProjectId) {
+            $projects[] = $projectService->get($gitlabProjectId);
         }
-        $mergeRequests = $client->mergeRequests()->all(9102042);
-        var_dump($mergeRequests);
 
-//                if (!$output->isQuiet()) {
-//                    $output->writeln(sprintf('<info>file %s saved.</info>', $filename));
-//                }
+        $mergeRequests = [];
+        foreach ($projects as $project) {
+            $mergeRequests = array_merge($mergeRequests, $mergeRequestService->all($project));
+        }
+
+        $rows = [];
+        foreach ($mergeRequests as $mergeRequest) {
+            $rows[] = [
+                $mergeRequest->project()->name(),
+                $mergeRequest->title(),
+            ];
+        }
+
+        if (count($rows) == 0) {
+            $output->writeln('No results.');
+            return;
+        }
+
+         $table = new Table($output);
+         $table
+            ->setHeaders(['Project', 'Name'])
+            ->setRows($rows) ;
+        $table->render();
     }
 }
