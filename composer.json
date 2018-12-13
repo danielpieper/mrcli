@@ -38,7 +38,9 @@
     "symfony/finder": "^4.0.4",
     "php-http/curl-client": "^1.7",
     "m4tthumphrey/php-gitlab-api": "^9.11",
-    "mpociot/slack-client": "^1.2"
+    "mpociot/slack-client": "^1.2",
+    "nesbot/carbon": "^2.7",
+    "league/container": "^3.2"
   },
   "minimum-stability": "stable",
   "bin": [
