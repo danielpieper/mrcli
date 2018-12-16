@@ -33,14 +33,12 @@
     "ext-curl": "*",
     "ext-intl": "*",
     "symfony/console": "^4.0.4",
-    "symfony/config": "^4.0.4",
-    "symfony/yaml": "^4.0.4",
-    "symfony/finder": "^4.0.4",
     "php-http/curl-client": "^1.7",
     "m4tthumphrey/php-gitlab-api": "^9.11",
     "mpociot/slack-client": "^1.2",
     "nesbot/carbon": "^2.7",
-    "league/container": "^3.2"
+    "league/container": "^3.2",
+    "vlucas/phpdotenv": "^2.5"
   },
   "minimum-stability": "stable",
   "bin": [

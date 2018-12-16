@@ -12,3 +12,4 @@ config.yaml
 mrcli.phar
 box.phar
 /dist
+.env
