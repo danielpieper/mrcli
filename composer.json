@@ -35,10 +35,10 @@
     "symfony/console": "^4.0.4",
     "php-http/curl-client": "^1.7",
     "m4tthumphrey/php-gitlab-api": "^9.11",
-    "mpociot/slack-client": "^1.2",
     "nesbot/carbon": "^2.7",
     "league/container": "^3.2",
-    "vlucas/phpdotenv": "^2.5"
+    "vlucas/phpdotenv": "^2.5",
+    "razorpay/slack": "^1.10"
   },
   "minimum-stability": "stable",
   "bin": [

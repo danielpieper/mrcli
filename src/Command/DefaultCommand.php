@@ -4,11 +4,13 @@ namespace DanielPieper\MergeReminder\Command;
 
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
+use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DefaultCommand extends Command
@@ -19,10 +21,17 @@ class DefaultCommand extends Command
     /** @var MergeRequestService */
     private $mergeRequestService;
 
-    public function __construct(ProjectService $projectService, MergeRequestService $mergeRequestService)
-    {
+    /** @var SlackService */
+    private $slackService;
+
+    public function __construct(
+        ProjectService $projectService,
+        MergeRequestService $mergeRequestService,
+        SlackService $slackService
+    ) {
         $this->projectService = $projectService;
         $this->mergeRequestService = $mergeRequestService;
+        $this->slackService = $slackService;
         parent::__construct();
     }
 
@@ -30,11 +39,17 @@ class DefaultCommand extends Command
     {
         $this
             ->setName('merge-requests')
-            ->setDescription('List pending merge requests')
+            ->setDescription('Post pending merge-requests to a slack channel')
             ->addArgument(
-                'projects',
+                'project_ids',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
                 'Gitlab project id\'s (separate by space)'
+            )
+            ->addOption(
+                'print',
+                'p',
+                InputOption::VALUE_NONE,
+                'Print pending merge requests and exit.'
             );
     }
 
@@ -49,7 +64,7 @@ class DefaultCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $projects = [];
-        foreach ($input->getArgument('projects') as $projectId) {
+        foreach ($input->getArgument('project_ids') as $projectId) {
             $projects[] = $this->projectService->get((int)$projectId);
         }
 
@@ -74,11 +89,16 @@ class DefaultCommand extends Command
             return;
         }
 
-         $table = new Table($output);
-         $table
-             ->setHeaderTitle('Merge requests')
-             ->setHeaders(['Project', 'Title', 'Author', 'Assignee'])
-             ->setRows($rows) ;
-        $table->render();
+        if ($input->getOption('print')) {
+            $table = new Table($output);
+            $table
+                ->setHeaderTitle('Merge requests')
+                ->setHeaders(['Project', 'Title', 'Author', 'Assignee'])
+                ->setRows($rows);
+            $table->render();
+            return;
+        }
+
+        $this->slackService->postMessage();
     }
 }
