@@ -12,6 +12,9 @@ class MergeRequest
     /** @var int */
     private $id;
 
+    /** @var int */
+    private $iid;
+
     /** @var string */
     private $title;
 
@@ -33,6 +36,7 @@ class MergeRequest
     /**
      * Project constructor.
      * @param int $id
+     * @param int $iid
      * @param string $title
      * @param string $state
      * @param string $webUrl
@@ -42,6 +46,7 @@ class MergeRequest
      */
     public function __construct(
         int $id,
+        int $iid,
         string $title,
         string $state,
         string $webUrl,
@@ -50,6 +55,7 @@ class MergeRequest
         User $assignee
     ) {
         $this->id = $id;
+        $this->iid = $iid;
         $this->title = $title;
         $this->state = $state;
         $this->webUrl = $webUrl;
@@ -66,6 +72,7 @@ class MergeRequest
     {
         return new self(
             (int)$mergeRequest['id'],
+            (int)$mergeRequest['iid'],
             (string)$mergeRequest['title'],
             (string)$mergeRequest['state'],
             (string)$mergeRequest['web_url'],
@@ -73,6 +80,14 @@ class MergeRequest
             $mergeRequest['author'],
             $mergeRequest['assignee']
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getIid(): int
+    {
+        return $this->iid;
     }
 
     /**

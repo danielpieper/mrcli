@@ -29,6 +29,7 @@ class SlackServiceProvider extends AbstractServiceProvider
                 'username' => 'Friendly Merge Reminder',
                 'icon' => ':owl:',
                 'channel' => '#gitlab',
+                'allow_markdown' => true,
             ]);
     }
 }

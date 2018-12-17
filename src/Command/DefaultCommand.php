@@ -2,10 +2,12 @@
 
 namespace DanielPieper\MergeReminder\Command;
 
+use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
+use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,16 +23,21 @@ class DefaultCommand extends Command
     /** @var MergeRequestService */
     private $mergeRequestService;
 
+    /** @var MergeRequestApprovalService */
+    private $mergeRequestApprovalService;
+
     /** @var SlackService */
     private $slackService;
 
     public function __construct(
         ProjectService $projectService,
         MergeRequestService $mergeRequestService,
+        MergeRequestApprovalService $mergeRequestApprovalService,
         SlackService $slackService
     ) {
         $this->projectService = $projectService;
         $this->mergeRequestService = $mergeRequestService;
+        $this->mergeRequestApprovalService = $mergeRequestApprovalService;
         $this->slackService = $slackService;
         parent::__construct();
     }
@@ -73,32 +80,44 @@ class DefaultCommand extends Command
         foreach ($projects as $project) {
             $mergeRequests = array_merge($mergeRequests, $this->mergeRequestService->all($project));
         }
+        if (count($mergeRequests) == 0) {
+            $output->writeln('No pending merge requests.');
+            return;
+        }
 
-        $rows = [];
+        $mergeRequestApprovals = [];
         foreach ($mergeRequests as $mergeRequest) {
+            $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
+        }
+
+        if ($input->getOption('print')) {
+            $this->print($output, $mergeRequestApprovals);
+            return;
+        }
+
+        $this->slackService->postMessage($mergeRequestApprovals);
+    }
+
+    private function print(OutputInterface $output, array $mergeRequestApprovals): void
+    {
+        $rows = [];
+        /** @var MergeRequestApproval $mergeRequestApproval */
+        foreach ($mergeRequestApprovals as $mergeRequestApproval) {
+            $mergeRequest = $mergeRequestApproval->getMergeRequest();
             $rows[] = [
                 $mergeRequest->getProject()->getName(),
                 $mergeRequest->getTitle(),
                 $mergeRequest->getAuthor()->getUsername(),
                 $mergeRequest->getAssignee()->getUsername(),
+                $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
             ];
         }
 
-        if (count($rows) == 0) {
-            $output->writeln('No results.');
-            return;
-        }
-
-        if ($input->getOption('print')) {
-            $table = new Table($output);
-            $table
-                ->setHeaderTitle('Merge requests')
-                ->setHeaders(['Project', 'Title', 'Author', 'Assignee'])
-                ->setRows($rows);
-            $table->render();
-            return;
-        }
-
-        $this->slackService->postMessage();
+        $table = new Table($output);
+        $table
+            ->setHeaderTitle('Merge requests')
+            ->setHeaders(['Project', 'Title', 'Author', 'Assignee', 'Created'])
+            ->setRows($rows);
+        $table->render();
     }
 }

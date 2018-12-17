@@ -3,6 +3,7 @@
 namespace DanielPieper\MergeReminder\ServiceProvider;
 
 use DanielPieper\MergeReminder\Command\DefaultCommand;
+use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\SlackService;
@@ -16,6 +17,7 @@ class AppServiceProvider extends AbstractServiceProvider
      */
     protected $provides = [
         MergeRequestService::class,
+        MergeRequestApprovalService::class,
         ProjectService::class,
         SlackService::class,
         DefaultCommand::class,
@@ -32,6 +34,9 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->add(MergeRequestService::class)
             ->addArgument(\Gitlab\Client::class);
 
+        $container->add(MergeRequestApprovalService::class)
+            ->addArgument(\Gitlab\Client::class);
+
         $container->add(ProjectService::class)
             ->addArgument(\Gitlab\Client::class);
 
@@ -41,6 +46,7 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->add(DefaultCommand::class)
             ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
+            ->addArgument(MergeRequestApprovalService::class)
             ->addArgument(SlackService::class);
     }
 }

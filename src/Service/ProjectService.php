@@ -17,16 +17,29 @@ class ProjectService
 
     /**
      * @param int $id
+     * @return Project|null
+     */
+    public function find(int $id): Project
+    {
+        $project = $this->gitlabClient->projects()->show($id);
+        if (!$project) {
+            return null;
+        }
+        return Project::fromArray($project);
+    }
+
+    /**
+     * @param int $id
      * @return Project
      * @throws ProjectNotFoundException
      */
     public function get(int $id): Project
     {
-        $project = $this->gitlabClient->projects()->show($id);
+        $project = $this->find($id);
         if (!$project) {
             throw new ProjectNotFoundException();
         }
-        return Project::fromArray($project);
+        return $project;
     }
 
     /**
