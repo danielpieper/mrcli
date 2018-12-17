@@ -68,7 +68,9 @@ class MergeRequestService
     {
         $mergeRequest['project'] = $project;
         $mergeRequest['author'] = User::fromArray($mergeRequest['author']);
-        $mergeRequest['assignee'] = User::fromArray($mergeRequest['assignee']);
+        if ($mergeRequest['assignee']) {
+            $mergeRequest['assignee'] = User::fromArray($mergeRequest['assignee']);
+        }
         return MergeRequest::fromArray($mergeRequest);
     }
 }

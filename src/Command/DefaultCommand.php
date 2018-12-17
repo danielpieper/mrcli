@@ -104,11 +104,13 @@ class DefaultCommand extends Command
         /** @var MergeRequestApproval $mergeRequestApproval */
         foreach ($mergeRequestApprovals as $mergeRequestApproval) {
             $mergeRequest = $mergeRequestApproval->getMergeRequest();
+            $assignee = $mergeRequest->getAssignee();
+
             $rows[] = [
                 $mergeRequest->getProject()->getName(),
                 $mergeRequest->getTitle(),
                 $mergeRequest->getAuthor()->getUsername(),
-                $mergeRequest->getAssignee()->getUsername(),
+                ($assignee ? $assignee->getUsername() : ''),
                 $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
             ];
         }

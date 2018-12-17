@@ -52,7 +52,7 @@ class MergeRequest
         string $webUrl,
         Project $project,
         User $author,
-        User $assignee
+        ?User $assignee = null
     ) {
         $this->id = $id;
         $this->iid = $iid;
@@ -171,9 +171,9 @@ class MergeRequest
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getAssignee(): User
+    public function getAssignee()
     {
         return $this->assignee;
     }

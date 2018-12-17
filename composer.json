@@ -28,10 +28,9 @@
     "sebastian/phpcpd": "^4.0.0"
   },
   "require": {
-    "php": "^7.2",
+    "php": "^7.1",
     "ext-iconv": "*",
     "ext-curl": "*",
-    "ext-intl": "*",
     "symfony/console": "^4.0.4",
     "php-http/curl-client": "^1.7",
     "m4tthumphrey/php-gitlab-api": "^9.11",
