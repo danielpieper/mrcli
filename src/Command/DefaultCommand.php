@@ -10,6 +10,8 @@ use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -106,19 +108,42 @@ class DefaultCommand extends Command
             $mergeRequest = $mergeRequestApproval->getMergeRequest();
             $assignee = $mergeRequest->getAssignee();
 
+            $approvers = $mergeRequestApproval->getApprovers();
+            $approverNames = [];
+            foreach ($approvers as $approver) {
+                $approverNames[] = $approver->getUsername();
+            }
+
+            $approvedBy = $mergeRequestApproval->getApprovedBy();
+            $approvedByNames = [];
+            foreach ($approvedBy as $approver) {
+                $approvedByNames[] = $approver->getUsername();
+            }
+
             $rows[] = [
-                $mergeRequest->getProject()->getName(),
-                $mergeRequest->getTitle(),
+                new TableCell(strtr('[:project] :title', [
+                    ':project' => $mergeRequest->getProject()->getName(),
+                    ':title' => $mergeRequest->getTitle()
+                ]), ['rowspan' => 2]),
                 $mergeRequest->getAuthor()->getUsername(),
                 ($assignee ? $assignee->getUsername() : ''),
+                implode(', ', $approverNames),
+                implode(', ', $approvedByNames),
                 $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
             ];
+            $rows[] = [
+                new TableCell($mergeRequest->getWebUrl(), ['colspan' => 5]),
+            ];
+            $rows[] = new TableSeparator();
         }
+        array_pop($rows);
 
         $table = new Table($output);
         $table
+            ->setStyle('borderless')
             ->setHeaderTitle('Merge requests')
-            ->setHeaders(['Project', 'Title', 'Author', 'Assignee', 'Created'])
+            ->setHeaders(['Title', 'Author', 'Assignee', 'Approvers', 'Approved by', 'Created'])
+            ->setColumnMaxWidth(0, 50)
             ->setRows($rows);
         $table->render();
     }
