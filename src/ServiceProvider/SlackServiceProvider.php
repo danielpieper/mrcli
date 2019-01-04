@@ -28,7 +28,7 @@ class SlackServiceProvider extends AbstractServiceProvider
             ->addArgument([
                 'username' => 'Friendly Merge Reminder',
                 'icon' => ':owl:',
-                'channel' => '#gitlab',
+                'channel' => $container->get('SLACK_CHANNEL'),
                 'allow_markdown' => true,
             ]);
     }

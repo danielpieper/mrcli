@@ -8,10 +8,11 @@ use Symfony\Component\Console\Application;
 
 $dotEnv = new \Dotenv\Dotenv(__DIR__);
 $dotEnv->load();
-$dotEnv->required(['GITLAB_TOKEN', 'SLACK_WEBHOOK_URL'])->notEmpty();
+$dotEnv->required(['GITLAB_TOKEN', 'SLACK_WEBHOOK_URL', 'SLACK_CHANNEL'])->notEmpty();
 
 $container = new \League\Container\Container();
 $container->add('SLACK_WEBHOOK_URL', getenv('SLACK_WEBHOOK_URL'));
+$container->add('SLACK_CHANNEL', getenv('SLACK_CHANNEL'));
 $container->add('GITLAB_TOKEN', getenv('GITLAB_TOKEN'));
 $container->add('GITLAB_URL', getenv('GITLAB_URL') ?? 'https://gitlab.com');
 $container->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\GitlabServiceProvider::class)
