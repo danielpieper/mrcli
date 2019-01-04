@@ -21,17 +21,15 @@ class SlackService
      */
     public function postMessage(array $mergeRequestApprovals)
     {
-        $message = $this->slackClient->createMessage();
-
         $transformer = new MergeRequestApprovalTransformer();
 
-        $texts = [];
         foreach ($mergeRequestApprovals as $mergeRequestApproval) {
-            $texts[] = $transformer->transform($mergeRequestApproval);
+            $message = $this->slackClient->createMessage();
+            $message = $transformer->transform($message, $mergeRequestApproval);
+//            var_dump($message);
+//            return;
+
+            $this->slackClient->sendMessage($message);
         }
-
-        $message->setText(implode("\n\n", $texts));
-
-        $this->slackClient->sendMessage($message);
     }
 }

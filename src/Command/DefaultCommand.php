@@ -91,6 +91,9 @@ class DefaultCommand extends Command
         foreach ($mergeRequests as $mergeRequest) {
             $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
         }
+        $mergeRequestApprovals = array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
+            return $item->getApprovalsLeft() > 0;
+        });
 
         if ($input->getOption('print')) {
             $this->print($output, $mergeRequestApprovals);
