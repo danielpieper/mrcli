@@ -47,6 +47,7 @@ class SlackService
             'title' => $mergeRequest->getTitle(),
             'title_link' => $mergeRequest->getWebUrl(),
             'author_name' => $mergeRequest->getAuthor()->getUsername(),
+            'color' => $this->getColor($mergeRequestApproval),
             'fields' => [
                 [
                     'title' => 'Approvers',
@@ -80,5 +81,18 @@ class SlackService
         }
 
         return implode(' ', $result);
+    }
+
+    private function getColor(MergeRequestApproval $mergeRequestApproval): string
+    {
+        $ageInDays = $mergeRequestApproval->getCreatedAt()->diffInDays();
+
+        if ($ageInDays > 3) {
+            return 'danger';
+        }
+        if ($ageInDays > 1) {
+            return 'warning';
+        }
+        return 'good';
     }
 }

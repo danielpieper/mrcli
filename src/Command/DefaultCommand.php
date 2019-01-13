@@ -72,6 +72,7 @@ class DefaultCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
         $projects = [];
         foreach ($input->getArgument('project_ids') as $projectId) {
             $projects[] = $this->projectService->get((int)$projectId);
@@ -92,7 +93,7 @@ class DefaultCommand extends Command
             $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
         }
         $mergeRequestApprovals = array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
-            return $item->getApprovalsLeft() > 0;
+            return $item->getApprovalsLeft() > 0 && $item->getApprovers() > 0;
         });
         if (count($mergeRequestApprovals) == 0) {
             $output->writeln('No pending merge request approvals.');
