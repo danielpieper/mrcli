@@ -43,13 +43,16 @@ class SlackService
     {
         $mergeRequest = $mergeRequestApproval->getMergeRequest();
         $project = $mergeRequest->getProject();
+        $author = $mergeRequest->getAuthor();
 
         $attachment = new Attachment([
             'fallback' => $mergeRequest->getWebUrl(),
             'title' => $mergeRequest->getTitle(),
             'title_link' => $mergeRequest->getWebUrl(),
             'text' => $mergeRequest->getDescription(),
-            'author_name' => $mergeRequest->getAuthor()->getUsername(),
+            'author_name' => $author->getUsername(),
+            /* 'author_icon' => $author->getAvatarUrl(), */
+            'author_link' => $author->getWebUrl(),
             'color' => $this->getColor($mergeRequestApproval),
             'fields' => $this->getFields($mergeRequestApproval),
             'footer' => $project->getName(),
@@ -68,7 +71,7 @@ class SlackService
             ],
         ];
 
-        if ($mergeRequestApproval->getUpdatedAt()->notEqualTo($mergeRequestApproval->getCreatedAt())) {
+        if ($mergeRequestApproval->getUpdatedAt()->diffInDays($mergeRequestApproval->getCreatedAt()) > 0) {
             $fields[] = [
                 'title' => 'Updated',
                 'value' => $mergeRequestApproval->getUpdatedAt()->shortRelativeToNowDiffForHumans(),
@@ -125,7 +128,7 @@ class SlackService
 
         $result = [];
         foreach ($approvers as $approver) {
-            $result[] = '@' . $approver->getUsername();
+            $result[] = $approver->getUsername();
         }
 
         return $result;
