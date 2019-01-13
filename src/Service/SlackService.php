@@ -4,6 +4,7 @@ namespace DanielPieper\MergeReminder\Service;
 
 use DanielPieper\MergeReminder\Transformer\MergeRequestApprovalTransformer;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
+use Razorpay\Slack\Attachment;
 use Razorpay\Slack\Client;
 
 class SlackService
@@ -21,15 +22,63 @@ class SlackService
      */
     public function postMessage(array $mergeRequestApprovals)
     {
-        $transformer = new MergeRequestApprovalTransformer();
+        $message = $this->slackClient->createMessage();
+        $message->setText('Your pending merge requests');
 
         foreach ($mergeRequestApprovals as $mergeRequestApproval) {
-            $message = $this->slackClient->createMessage();
-            $message = $transformer->transform($message, $mergeRequestApproval);
-//            var_dump($message);
-//            return;
-
-            $this->slackClient->sendMessage($message);
+            $attachment = $this->getAttachment($mergeRequestApproval);
+            $message->attach($attachment);
         }
+
+        $this->slackClient->sendMessage($message);
+    }
+
+    /**
+     * @param MergeRequestApproval $mergeRequestApproval
+     * @return Attachment
+     */
+    private function getAttachment(MergeRequestApproval $mergeRequestApproval): Attachment
+    {
+        $mergeRequest = $mergeRequestApproval->getMergeRequest();
+        $project = $mergeRequest->getProject();
+
+        $attachment = new Attachment([
+            'fallback' => $mergeRequest->getWebUrl(),
+            'title' => $mergeRequest->getTitle(),
+            'title_link' => $mergeRequest->getWebUrl(),
+            'author_name' => $mergeRequest->getAuthor()->getUsername(),
+            'fields' => [
+                [
+                    'title' => 'Approvers',
+                    'value' => $this->getApprovers($mergeRequestApproval),
+                    'short' => true,
+                ],
+                [
+                    'title' => 'Created',
+                    'value' => $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
+                    'short' => true,
+                ],
+            ],
+            'footer' => $project->getName(),
+        ]);
+
+        return $attachment;
+    }
+
+    /**
+     * @param MergeRequestApproval $mergeRequestApproval
+     * @return string
+     */
+    private function getApprovers(MergeRequestApproval $mergeRequestApproval): string
+    {
+        /** @var User[] $approvers */
+        $approvers = $mergeRequestApproval->getApprovers();
+
+        $result = [];
+        foreach ($approvers as $approver) {
+            $result[] = $approver->getUsername();
+        }
+
+        return implode(' ', $result);
     }
 }

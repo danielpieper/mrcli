@@ -94,6 +94,10 @@ class DefaultCommand extends Command
         $mergeRequestApprovals = array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
             return $item->getApprovalsLeft() > 0;
         });
+        if (count($mergeRequestApprovals) == 0) {
+            $output->writeln('No pending merge request approvals.');
+            return;
+        }
 
         if ($input->getOption('print')) {
             $this->print($output, $mergeRequestApprovals);
