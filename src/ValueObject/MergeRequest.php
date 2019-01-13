@@ -19,6 +19,9 @@ class MergeRequest
     private $title;
 
     /** @var string */
+    private $description;
+
+    /** @var string */
     private $state;
 
     /** @var string */
@@ -41,17 +44,21 @@ class MergeRequest
      * @param int $id
      * @param int $iid
      * @param string $title
+     * @param string $description
      * @param string $state
      * @param string $webUrl
      * @param bool $isWorkInProgress
      * @param Project $project
      * @param User $author
      * @param User $assignee
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         int $id,
         int $iid,
         string $title,
+        string $description,
         string $state,
         string $webUrl,
         bool $isWorkInProgress,
@@ -62,6 +69,7 @@ class MergeRequest
         $this->id = $id;
         $this->iid = $iid;
         $this->title = $title;
+        $this->description = $description;
         $this->state = $state;
         $this->webUrl = $webUrl;
         $this->isWorkInProgress = $isWorkInProgress;
@@ -80,6 +88,7 @@ class MergeRequest
             (int)$mergeRequest['id'],
             (int)$mergeRequest['iid'],
             (string)$mergeRequest['title'],
+            (string)$mergeRequest['description'],
             (string)$mergeRequest['state'],
             (string)$mergeRequest['web_url'],
             (bool)$mergeRequest['work_in_progress'],
@@ -111,6 +120,14 @@ class MergeRequest
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     /**
