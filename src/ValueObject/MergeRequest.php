@@ -24,6 +24,9 @@ class MergeRequest
     /** @var string */
     private $webUrl;
 
+    /** @var bool */
+    private $isWorkInProgress;
+
     /** @var Project */
     private $project;
 
@@ -40,6 +43,7 @@ class MergeRequest
      * @param string $title
      * @param string $state
      * @param string $webUrl
+     * @param bool $isWorkInProgress
      * @param Project $project
      * @param User $author
      * @param User $assignee
@@ -50,6 +54,7 @@ class MergeRequest
         string $title,
         string $state,
         string $webUrl,
+        bool $isWorkInProgress,
         Project $project,
         User $author,
         ?User $assignee = null
@@ -59,6 +64,7 @@ class MergeRequest
         $this->title = $title;
         $this->state = $state;
         $this->webUrl = $webUrl;
+        $this->isWorkInProgress = $isWorkInProgress;
         $this->project = $project;
         $this->author = $author;
         $this->assignee = $assignee;
@@ -76,6 +82,7 @@ class MergeRequest
             (string)$mergeRequest['title'],
             (string)$mergeRequest['state'],
             (string)$mergeRequest['web_url'],
+            (bool)$mergeRequest['work_in_progress'],
             $mergeRequest['project'],
             $mergeRequest['author'],
             $mergeRequest['assignee']
@@ -173,8 +180,16 @@ class MergeRequest
     /**
      * @return User|null
      */
-    public function getAssignee()
+    public function getAssignee(): ?User
     {
         return $this->assignee;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWorkInProgress(): bool
+    {
+        return $this->isWorkInProgress;
     }
 }
