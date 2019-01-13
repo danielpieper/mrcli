@@ -49,29 +49,65 @@ class SlackService
             'text' => $mergeRequest->getDescription(),
             'author_name' => $mergeRequest->getAuthor()->getUsername(),
             'color' => $this->getColor($mergeRequestApproval),
-            'fields' => [
-                [
-                    'title' => 'Approvers',
-                    'value' => $this->getApprovers($mergeRequestApproval),
-                    'short' => true,
-                ],
-                [
-                    'title' => 'Created',
-                    'value' => $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
-                    'short' => true,
-                ],
-            ],
+            'fields' => $this->getFields($mergeRequestApproval),
             'footer' => $project->getName(),
         ]);
 
         return $attachment;
     }
 
+    private function getFields(MergeRequestApproval $mergeRequestApproval): array
+    {
+        $fields = [
+            [
+                'title' => 'Created',
+                'value' => $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
+                'short' => true,
+            ],
+        ];
+        $approverNames = $this->getApproverNames($mergeRequestApproval);
+        if (count($approverNames) > 0) {
+            $fields[] = [
+                'title' => 'Approvers',
+                'value' => implode(', ', $approverNames),
+                'short' => true,
+            ];
+        }
+
+        $approverGroupNames = $this->getApproverGroupNames($mergeRequestApproval);
+        if (count($approverGroupNames) > 0) {
+            $fields[] = [
+                'title' => 'Approver Groups',
+                'value' => implode(', ', $approverGroupNames),
+                'short' => true,
+            ];
+        }
+
+        return $fields;
+    }
+
     /**
      * @param MergeRequestApproval $mergeRequestApproval
-     * @return string
+     * @return array
      */
-    private function getApprovers(MergeRequestApproval $mergeRequestApproval): string
+    private function getApproverGroupNames(MergeRequestApproval $mergeRequestApproval): array
+    {
+        /** @var Group[] $approverGroups */
+        $approverGroups = $mergeRequestApproval->getApproverGroups();
+
+        $result = [];
+        foreach ($approverGroups as $approverGroup) {
+            $result[] = $approverGroup->getName();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param MergeRequestApproval $mergeRequestApproval
+     * @return array
+     */
+    private function getApproverNames(MergeRequestApproval $mergeRequestApproval): array
     {
         /** @var User[] $approvers */
         $approvers = $mergeRequestApproval->getApprovers();
@@ -81,7 +117,7 @@ class SlackService
             $result[] = $approver->getUsername();
         }
 
-        return implode(', ', $result);
+        return $result;
     }
 
     private function getColor(MergeRequestApproval $mergeRequestApproval): string

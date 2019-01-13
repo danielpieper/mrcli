@@ -6,6 +6,7 @@ use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\User;
+use DanielPieper\MergeReminder\ValueObject\Group;
 
 class MergeRequestApprovalService
 {
@@ -66,6 +67,12 @@ class MergeRequestApprovalService
             }
         }
         $mergeRequestApproval['approvers'] = $approvers;
+
+        $approverGroups = [];
+        foreach ($mergeRequestApproval['approver_groups'] as $approverGroup) {
+            $approverGroups[] = Group::fromArray($approverGroup['group']);
+        }
+        $mergeRequestApproval['approver_groups'] = $approverGroups;
 
         $approvedBy = [];
         foreach ($mergeRequestApproval['approved_by'] as $approver) {

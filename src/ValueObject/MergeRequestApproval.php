@@ -23,6 +23,9 @@ class MergeRequestApproval
     /** @var User[] */
     private $approvers;
 
+    /** @var Group[] */
+    private $approverGroups;
+
     /** @var Carbon */
     private $updatedAt;
 
@@ -40,6 +43,7 @@ class MergeRequestApproval
      * @param int $approvalsLeft
      * @param array $approvedBy
      * @param array $approvers
+     * @param array $approverGroups
      * @param Carbon $updatedAt
      * @param Carbon $createdAt
      * @param MergeRequest $mergeRequest
@@ -50,6 +54,7 @@ class MergeRequestApproval
         int $approvalsLeft,
         array $approvedBy,
         array $approvers,
+        array $approverGroups,
         Carbon $updatedAt,
         Carbon $createdAt,
         MergeRequest $mergeRequest
@@ -59,6 +64,7 @@ class MergeRequestApproval
         $this->approvalsLeft = $approvalsLeft;
         $this->approvedBy = $approvedBy;
         $this->approvers = $approvers;
+        $this->approverGroups = $approverGroups;
         $this->updatedAt = $updatedAt;
         $this->createdAt = $createdAt;
         $this->mergeRequest = $mergeRequest;
@@ -77,6 +83,7 @@ class MergeRequestApproval
             (int)$mergeRequestApproval['approvals_left'],
             $mergeRequestApproval['approved_by'],
             $mergeRequestApproval['approvers'],
+            $mergeRequestApproval['approver_groups'],
             new Carbon($mergeRequestApproval['updated_at']),
             new Carbon($mergeRequestApproval['created_at']),
             $mergeRequestApproval['merge_request']
@@ -121,6 +128,14 @@ class MergeRequestApproval
     public function getApprovers(): array
     {
         return $this->approvers;
+    }
+
+    /**
+     * @return Group[]
+     */
+    public function getApproverGroups(): array
+    {
+        return $this->approverGroups;
     }
 
     /**
