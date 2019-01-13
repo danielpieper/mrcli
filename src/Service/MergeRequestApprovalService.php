@@ -23,7 +23,7 @@ class MergeRequestApprovalService
      * @return MergeRequestApproval
      * @throws \Exception
      */
-    public function find(MergeRequest $mergeRequest): MergeRequestApproval
+    public function find(MergeRequest $mergeRequest): ?MergeRequestApproval
     {
         $mergeRequestApproval = $this->gitlabClient->mergeRequests()->approvals(
             $mergeRequest->getProject()->getId(),

@@ -4,6 +4,8 @@ namespace DanielPieper\MergeReminder\Service;
 
 use DanielPieper\MergeReminder\Transformer\MergeRequestApprovalTransformer;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
+use DanielPieper\MergeReminder\ValueObject\User;
+use DanielPieper\MergeReminder\ValueObject\Group;
 use Razorpay\Slack\Attachment;
 use Razorpay\Slack\Client;
 
@@ -65,6 +67,15 @@ class SlackService
                 'short' => true,
             ],
         ];
+
+        if ($mergeRequestApproval->getUpdatedAt()->notEqualTo($mergeRequestApproval->getCreatedAt())) {
+            $fields[] = [
+                'title' => 'Updated',
+                'value' => $mergeRequestApproval->getUpdatedAt()->shortRelativeToNowDiffForHumans(),
+                'short' => true,
+            ];
+        }
+
         $approverNames = $this->getApproverNames($mergeRequestApproval);
         if (count($approverNames) > 0) {
             $fields[] = [
@@ -114,7 +125,7 @@ class SlackService
 
         $result = [];
         foreach ($approvers as $approver) {
-            $result[] = $approver->getUsername();
+            $result[] = '@' . $approver->getUsername();
         }
 
         return $result;
