@@ -100,6 +100,13 @@ class DefaultCommand extends Command
             return;
         }
 
+        usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
+            if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
+                return 0;
+            }
+            return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
+        });
+
         if ($input->getOption('print')) {
             $this->print($output, $mergeRequestApprovals);
             return;
