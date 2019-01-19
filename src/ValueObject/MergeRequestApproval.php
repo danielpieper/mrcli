@@ -131,11 +131,37 @@ class MergeRequestApproval
     }
 
     /**
+     * @return array
+     */
+    public function getApproverNames(): array
+    {
+        $result = [];
+        foreach ($this->approvers as $approver) {
+            $result[] = $approver->getUsername();
+        }
+
+        return $result;
+    }
+
+    /**
      * @return Group[]
      */
     public function getApproverGroups(): array
     {
         return $this->approverGroups;
+    }
+
+    /**
+     * @return array
+     */
+    public function getApproverGroupNames(): array
+    {
+        $result = [];
+        foreach ($this->approverGroups as $approverGroup) {
+            $result[] = $approverGroup->getName();
+        }
+
+        return $result;
     }
 
     /**

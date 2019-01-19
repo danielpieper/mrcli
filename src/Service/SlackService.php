@@ -2,7 +2,6 @@
 
 namespace DanielPieper\MergeReminder\Service;
 
-use DanielPieper\MergeReminder\Transformer\MergeRequestApprovalTransformer;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\User;
 use DanielPieper\MergeReminder\ValueObject\Group;
@@ -79,7 +78,7 @@ class SlackService
             ];
         }
 
-        $approverNames = $this->getApproverNames($mergeRequestApproval);
+        $approverNames = $mergeRequestApproval->getApproverNames();
         if (count($approverNames) > 0) {
             $fields[] = [
                 'title' => 'Approvers',
@@ -88,7 +87,7 @@ class SlackService
             ];
         }
 
-        $approverGroupNames = $this->getApproverGroupNames($mergeRequestApproval);
+        $approverGroupNames = $mergeRequestApproval->getApproverGroupNames();
         if (count($approverGroupNames) > 0) {
             $fields[] = [
                 'title' => 'Approver Groups',
@@ -102,38 +101,8 @@ class SlackService
 
     /**
      * @param MergeRequestApproval $mergeRequestApproval
-     * @return array
+     * @return string
      */
-    private function getApproverGroupNames(MergeRequestApproval $mergeRequestApproval): array
-    {
-        /** @var Group[] $approverGroups */
-        $approverGroups = $mergeRequestApproval->getApproverGroups();
-
-        $result = [];
-        foreach ($approverGroups as $approverGroup) {
-            $result[] = $approverGroup->getName();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param MergeRequestApproval $mergeRequestApproval
-     * @return array
-     */
-    private function getApproverNames(MergeRequestApproval $mergeRequestApproval): array
-    {
-        /** @var User[] $approvers */
-        $approvers = $mergeRequestApproval->getApprovers();
-
-        $result = [];
-        foreach ($approvers as $approver) {
-            $result[] = $approver->getUsername();
-        }
-
-        return $result;
-    }
-
     private function getColor(MergeRequestApproval $mergeRequestApproval): string
     {
         $ageInDays = $mergeRequestApproval->getCreatedAt()->diffInDays();

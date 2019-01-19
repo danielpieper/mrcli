@@ -108,58 +108,87 @@ class DefaultCommand extends Command
         });
 
         if ($input->getOption('print')) {
-            $this->print($output, $mergeRequestApprovals);
+            foreach ($mergeRequestApprovals as $mergeRequestApproval) {
+                $this->printMergeRequestApproval($output, $mergeRequestApproval);
+            }
             return;
         }
 
         $this->slackService->postMessage($mergeRequestApprovals);
     }
 
-    private function print(OutputInterface $output, array $mergeRequestApprovals): void
+    /**
+     * @param OutputInterface $output
+     * @param MergeRequestApproval $mergeRequestApproval
+     */
+    private function printMergeRequestApproval(OutputInterface $output, MergeRequestApproval $mergeRequestApproval): void
     {
-        $rows = [];
-        /** @var MergeRequestApproval $mergeRequestApproval */
-        foreach ($mergeRequestApprovals as $mergeRequestApproval) {
-            $mergeRequest = $mergeRequestApproval->getMergeRequest();
-            $assignee = $mergeRequest->getAssignee();
-
-            $approvers = $mergeRequestApproval->getApprovers();
-            $approverNames = [];
-            foreach ($approvers as $approver) {
-                $approverNames[] = $approver->getUsername();
-            }
-
-            $approvedBy = $mergeRequestApproval->getApprovedBy();
-            $approvedByNames = [];
-            foreach ($approvedBy as $approver) {
-                $approvedByNames[] = $approver->getUsername();
-            }
-
-            $rows[] = [
-                new TableCell(strtr('[:project] :title', [
-                    ':project' => $mergeRequest->getProject()->getName(),
-                    ':title' => $mergeRequest->getTitle()
-                ]), ['rowspan' => 2]),
-                $mergeRequest->getAuthor()->getUsername(),
-                ($assignee ? $assignee->getUsername() : ''),
-                implode(', ', $approverNames),
-                implode(', ', $approvedByNames),
-                $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans(),
-            ];
-            $rows[] = [
-                new TableCell($mergeRequest->getWebUrl(), ['colspan' => 5]),
-            ];
-            $rows[] = new TableSeparator();
+        $mergeRequest = $mergeRequestApproval->getMergeRequest();
+        $output->writeln($mergeRequest->getAuthor()->getUsername());
+        $output->writeln(sprintf(
+            '[%s] <fg=%s>%s</>',
+            $mergeRequest->getProject()->getName(),
+            $this->getColor($mergeRequestApproval),
+            $mergeRequest->getTitle()
+        ));
+        $output->writeln($mergeRequest->getWebUrl());
+        if ($output->isVerbose()) {
+            $output->writeln($mergeRequest->getDescription());
         }
-        array_pop($rows);
+
+        $rows = [
+            [
+                'Created:',
+                $mergeRequestApproval->getCreatedAt()->shortRelativeToNowDiffForHumans()
+            ],
+        ];
+
+
+        if ($mergeRequestApproval->getUpdatedAt()->diffInDays($mergeRequestApproval->getCreatedAt()) > 0) {
+            $rows[] = [
+                'Updated:',
+                $mergeRequestApproval->getUpdatedAt()->shortRelativeToNowDiffForHumans(),
+            ];
+        }
+
+        $approverNames = $mergeRequestApproval->getApproverNames();
+        if (count($approverNames) > 0) {
+            $rows[] = [
+                'Approvers:',
+                implode(', ', $approverNames),
+            ];
+        }
+
+        $approverGroupNames = $mergeRequestApproval->getApproverGroupNames();
+        if (count($approverGroupNames) > 0) {
+            $rows[] = [
+                'Approver Groups:',
+                implode(', ', $approverGroupNames),
+            ];
+        }
 
         $table = new Table($output);
-        $table
-            ->setStyle('borderless')
-            ->setHeaderTitle('Merge requests')
-            ->setHeaders(['Title', 'Author', 'Assignee', 'Approvers', 'Approved by', 'Created'])
-            ->setColumnMaxWidth(0, 50)
-            ->setRows($rows);
+        $table->setStyle('compact');
+        $table->setRows($rows);
         $table->render();
+
+        $output->writeln('');
+    }
+
+    /**
+     * @param MergeRequestApproval $mergeRequestApproval
+     * @return string
+     */
+    private function getColor(MergeRequestApproval $mergeRequestApproval): string
+    {
+        $ageInDays = $mergeRequestApproval->getCreatedAt()->diffInDays();
+
+        if ($ageInDays > 2) {
+            return 'red';
+        }
+        if ($ageInDays > 1) {
+            return 'yellow';
+        }
+        return 'green';
     }
 }
