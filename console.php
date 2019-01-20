@@ -7,7 +7,7 @@ use DanielPieper\MergeReminder\Command\ApproverCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
 use Symfony\Component\Console\Application;
 
-$dotEnv = new \Dotenv\Dotenv(__DIR__);
+$dotEnv = \Dotenv\Dotenv::create(__DIR__);
 $dotEnv->load();
 $dotEnv->required(['GITLAB_TOKEN', 'SLACK_WEBHOOK_URL', 'SLACK_CHANNEL'])->notEmpty();
 

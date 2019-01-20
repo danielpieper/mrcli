@@ -26,7 +26,7 @@ build:
 	composer dump-autoload --classmap-authoritative --no-dev
 
 	# Build the PHAR
-	box build $(args)
+	box compile $(args)
 
 	# Install back all the dependencies
 	composer install

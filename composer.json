@@ -36,12 +36,12 @@
     "m4tthumphrey/php-gitlab-api": "dev-master",
     "nesbot/carbon": "^2.7",
     "league/container": "^3.2",
-    "vlucas/phpdotenv": "^2.5",
+    "vlucas/phpdotenv": "^3.1",
     "razorpay/slack": "^1.10"
   },
   "minimum-stability": "stable",
   "bin": [
-    "bin/mrcli"
+    "console.php"
   ],
   "repositories": [
     {
