@@ -21,10 +21,10 @@ class ProjectService
      * @param int $id
      * @return Project|null
      */
-    public function find(int $id): Project
+    public function find(int $id): ?Project
     {
         $project = $this->gitlabClient->projects()->show($id);
-        if (!$project) {
+        if (!is_array($project)) {
             return null;
         }
         return Project::fromArray($project);
@@ -47,6 +47,9 @@ class ProjectService
     public function allByUser(User $user): array
     {
         $projects = $this->gitlabClient->users()->usersProjects($user->getId());
+        if (!is_array($projects)) {
+            return [];
+        }
 
         return array_map(function ($project) {
             return Project::fromArray($project);

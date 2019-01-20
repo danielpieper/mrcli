@@ -20,7 +20,7 @@ class MergeRequestApprovalService
 
     /**
      * @param MergeRequest $mergeRequest
-     * @return MergeRequestApproval
+     * @return MergeRequestApproval|null
      * @throws \Exception
      */
     public function find(MergeRequest $mergeRequest): ?MergeRequestApproval
@@ -29,7 +29,7 @@ class MergeRequestApprovalService
             $mergeRequest->getProject()->getId(),
             $mergeRequest->getIid()
         );
-        if (!$mergeRequestApproval) {
+        if (!is_array($mergeRequestApproval)) {
             return null;
         }
         return $this->transform($mergeRequest, $mergeRequestApproval);

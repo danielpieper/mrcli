@@ -28,10 +28,10 @@ class MergeRequestService
      * @param int $id
      * @return MergeRequest|null
      */
-    public function findByProject(Project $project, int $id): MergeRequest
+    public function findByProject(Project $project, int $id): ?MergeRequest
     {
         $mergeRequest = $this->gitlabClient->mergeRequests()->show($project->getId(), $id);
-        if (!$mergeRequest) {
+        if (!is_array($mergeRequest)) {
             return null;
         }
         return $this->transform($project, $mergeRequest);

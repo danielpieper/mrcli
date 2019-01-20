@@ -19,10 +19,10 @@ class UserService
      * @param int $id
      * @return User|null
      */
-    public function find(int $id): User
+    public function find(int $id): ?User
     {
         $user = $this->gitlabClient->users()->show($id);
-        if (!$user) {
+        if (!is_array($user)) {
             return null;
         }
         return User::fromArray($user);
@@ -32,10 +32,10 @@ class UserService
      * @param string $username
      * @return User
      */
-    public function findByName(string $username): User
+    public function findByName(string $username): ?User
     {
         $users = $this->gitlabClient->users()->all(['username' => $username]);
-        if (count($users) == 0) {
+        if (!is_array($users) || count($users) == 0) {
             return null;
         }
 
@@ -49,7 +49,7 @@ class UserService
     public function getAuthenticated(): User
     {
         $user = $this->gitlabClient->users()->user();
-        if (!$user) {
+        if (!is_array($user)) {
             throw new UserNotFoundException();
         }
         return User::fromArray($user);
@@ -94,6 +94,9 @@ class UserService
             $parameters['username'] = $username;
         }
         $users = $this->gitlabClient->users()->all($parameters);
+        if (!is_array($users)) {
+            return [];
+        }
 
         return array_map(function ($user) {
             return User::fromArray($user);

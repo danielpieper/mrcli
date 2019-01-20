@@ -135,7 +135,7 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $user = $this->getUser($input->getArgument('username'));
+        $user = $this->getUser(/** @scrutinizer ignore-type */ $input->getArgument('username'));
         $mergeRequests = $this->getMergeRequests();
         $mergeRequestApprovals = $this->getMergeRequestApprovals(
             $mergeRequests,
