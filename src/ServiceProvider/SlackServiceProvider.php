@@ -23,7 +23,7 @@ class SlackServiceProvider extends AbstractServiceProvider
         /** @var Container $container */
         $container = $this->getContainer();
 
-        $container->add(Client::class)
+        $container->share(Client::class)
             ->addArgument('SLACK_WEBHOOK_URL')
             ->addArgument([
                 'username' => 'Friendly Merge Reminder',

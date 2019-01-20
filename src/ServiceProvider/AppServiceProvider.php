@@ -36,33 +36,33 @@ class AppServiceProvider extends AbstractServiceProvider
         /** @var Container $container */
         $container = $this->getContainer();
 
-        $container->add(MergeRequestApprovalService::class)
+        $container->share(MergeRequestApprovalService::class)
             ->addArgument(\Gitlab\Client::class);
 
-        $container->add(ProjectService::class)
+        $container->share(ProjectService::class)
             ->addArgument(\Gitlab\Client::class);
 
-        $container->add(MergeRequestService::class)
+        $container->share(MergeRequestService::class)
             ->addArgument(\Gitlab\Client::class)
             ->addArgument(ProjectService::class);
 
-        $container->add(UserService::class)
+        $container->share(UserService::class)
             ->addArgument(\Gitlab\Client::class);
 
-        $container->add(SlackService::class)
+        $container->share(SlackService::class)
             ->addArgument(\Razorpay\Slack\Client::class);
 
-        $container->add(OverviewCommand::class)
+        $container->share(OverviewCommand::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class);
 
-        $container->add(ProjectCommand::class)
+        $container->share(ProjectCommand::class)
             ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class)
             ->addArgument(SlackService::class);
 
-        $container->add(ApproverCommand::class)
+        $container->share(ApproverCommand::class)
             ->addArgument(UserService::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class)
