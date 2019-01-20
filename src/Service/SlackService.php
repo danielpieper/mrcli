@@ -18,11 +18,12 @@ class SlackService
 
     /**
      * @param MergeRequestApproval[] $mergeRequestApprovals
+     * @param string $messageText
      */
-    public function postMessage(array $mergeRequestApprovals)
+    public function postMessage(array $mergeRequestApprovals, $messageText = 'Your pending merge requests')
     {
         $message = $this->slackClient->createMessage();
-        $message->setText('Your pending merge requests');
+        $message->setText($messageText);
 
         foreach ($mergeRequestApprovals as $mergeRequestApproval) {
             $attachment = $this->getAttachment($mergeRequestApproval);

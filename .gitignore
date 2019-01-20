@@ -1,6 +1,4 @@
 /vendor
 .idea
-mrcli.phar
-/dist
 /.env*
 !/.env.example

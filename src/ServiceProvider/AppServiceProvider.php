@@ -8,7 +8,6 @@ use DanielPieper\MergeReminder\Command\ProjectCommand;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
-use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\Service\UserService;
 use League\Container\Container;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -22,7 +21,7 @@ class AppServiceProvider extends AbstractServiceProvider
         MergeRequestService::class,
         MergeRequestApprovalService::class,
         ProjectService::class,
-        SlackService::class,
+        UserService::class,
         OverviewCommand::class,
         ProjectCommand::class,
         ApproverCommand::class,
@@ -49,9 +48,6 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->share(UserService::class)
             ->addArgument(\Gitlab\Client::class);
 
-        $container->share(SlackService::class)
-            ->addArgument(\Razorpay\Slack\Client::class);
-
         $container->share(OverviewCommand::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class);
@@ -59,13 +55,11 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->share(ProjectCommand::class)
             ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class)
-            ->addArgument(SlackService::class);
+            ->addArgument(MergeRequestApprovalService::class);
 
         $container->share(ApproverCommand::class)
             ->addArgument(UserService::class)
             ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class)
-            ->addArgument(SlackService::class);
+            ->addArgument(MergeRequestApprovalService::class);
     }
 }

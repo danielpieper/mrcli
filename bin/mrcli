@@ -10,7 +10,7 @@ use Symfony\Component\Console\Application;
 
 $dotEnv = \Dotenv\Dotenv::create(__DIR__);
 $dotEnv->safeLoad();
-$dotEnv->required(['GITLAB_TOKEN', 'SLACK_WEBHOOK_URL', 'SLACK_CHANNEL'])->notEmpty();
+$dotEnv->required(['GITLAB_TOKEN'])->notEmpty();
 
 $container = new \League\Container\Container();
 $container->add('SLACK_WEBHOOK_URL', getenv('SLACK_WEBHOOK_URL'));
@@ -21,9 +21,8 @@ $container->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\Gitla
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\SlackServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\AppServiceProvider::class);
 
-$app = new Application('mrcli', '@package_version@');
+$app = new Application('mrcli', '1.0.0');
 $app->add($container->get(OverviewCommand::class));
 $app->add($container->get(ProjectCommand::class));
 $app->add($container->get(ApproverCommand::class));
-$app->setDefaultCommand($container->get(ApproverCommand::class)->getName());
 $app->run();

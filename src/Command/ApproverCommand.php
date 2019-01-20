@@ -6,8 +6,9 @@ use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\UserNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
-use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\Service\UserService;
+use DanielPieper\MergeReminder\SlackServiceAwareInterface;
+use DanielPieper\MergeReminder\SlackServiceAwareTrait;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\User;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,8 +16,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ApproverCommand extends BaseCommand
+class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
 {
+    use SlackServiceAwareTrait;
+
     /** @var UserService */
     private $userService;
 
@@ -26,19 +29,14 @@ class ApproverCommand extends BaseCommand
     /** @var MergeRequestApprovalService */
     private $mergeRequestApprovalService;
 
-    /** @var SlackService */
-    private $slackService;
-
     public function __construct(
         UserService $userService,
         MergeRequestService $mergeRequestService,
-        MergeRequestApprovalService $mergeRequestApprovalService,
-        SlackService $slackService
+        MergeRequestApprovalService $mergeRequestApprovalService
     ) {
         $this->userService = $userService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
-        $this->slackService = $slackService;
         parent::__construct();
     }
 
@@ -52,8 +50,7 @@ class ApproverCommand extends BaseCommand
                 'username',
                 InputArgument::OPTIONAL,
                 'Gitlab username or email address'
-            )
-            ->addOption(
+            )->addOption(
                 'slack',
                 's',
                 InputOption::VALUE_NONE,
@@ -125,12 +122,24 @@ class ApproverCommand extends BaseCommand
             return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
         });
 
+        $messageText = sprintf(
+            '%u Pending merge requests for %s:',
+            count($mergeRequestApprovals),
+            $user->getName()
+        );
+        $output->writeln([$messageText, '']);
+
         foreach ($mergeRequestApprovals as $mergeRequestApproval) {
             $this->printMergeRequestApproval($output, $mergeRequestApproval);
         }
 
         if ($input->getOption('slack')) {
-            $this->slackService->postMessage($mergeRequestApprovals);
+            if (!$this->slackService) {
+                $output->writeln('<error>Slack is not configured,'
+                    . ' please specify SLACK_WEBHOOK_URL and SLACK_CHANNEL environment variables.</error>');
+                return;
+            }
+            $this->slackService->postMessage($mergeRequestApprovals, $messageText);
         }
     }
 }
