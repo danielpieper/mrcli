@@ -56,6 +56,11 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
                 's',
                 InputOption::VALUE_NONE,
                 'Post to slack channel'
+            )->addOption(
+                'include-suggested',
+                'i',
+                InputOption::VALUE_NONE,
+                'Include suggested approvers'
             );
     }
 
@@ -88,24 +93,32 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     /**
      * @param array $mergeRequests
      * @param User $user
+     * @param bool $includeSuggestedApprovers
      * @return array
      * @throws MergeRequestApprovalNotFoundException
+     *
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    private function getMergeRequestApprovals(array $mergeRequests, User $user): array
-    {
+    private function getMergeRequestApprovals(
+        array $mergeRequests,
+        User $user,
+        bool $includeSuggestedApprovers = false
+    ): array {
         $mergeRequestApprovals = [];
         foreach ($mergeRequests as $mergeRequest) {
             $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
         }
         $mergeRequestApprovals = array_filter(
             $mergeRequestApprovals,
-            function (MergeRequestApproval $item) use ($user) {
+            function (MergeRequestApproval $item) use ($user, $includeSuggestedApprovers) {
                 $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
                 $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
                 $isApprover = in_array($user->getUsername(), $item->getApproverNames());
                 $isAssignee = $item->getMergeRequest()->getAssignee() == $user->getUsername();
+                $isSuggestedApprover = $includeSuggestedApprovers
+                    && in_array($user->getUsername(), $item->getSuggestedApproverNames()) ;
 
-                return $hasApprovalsLeft && !$isWorkInProgress && ($isApprover || $isAssignee);
+                return $hasApprovalsLeft && !$isWorkInProgress && ($isApprover || $isAssignee || $isSuggestedApprover);
             }
         );
         if (count($mergeRequestApprovals) == 0) {
@@ -124,7 +137,11 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     {
         $user = $this->getUser($input->getArgument('username'));
         $mergeRequests = $this->getMergeRequests();
-        $mergeRequestApprovals = $this->getMergeRequestApprovals($mergeRequests, $user);
+        $mergeRequestApprovals = $this->getMergeRequestApprovals(
+            $mergeRequests,
+            $user,
+            $input->getOption('include-suggested')
+        );
 
         usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
             if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {

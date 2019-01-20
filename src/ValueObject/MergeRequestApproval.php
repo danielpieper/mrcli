@@ -26,6 +26,9 @@ class MergeRequestApproval
     /** @var Group[] */
     private $approverGroups;
 
+    /** @var User[] */
+    private $suggestedApprovers;
+
     /** @var Carbon */
     private $updatedAt;
 
@@ -44,9 +47,12 @@ class MergeRequestApproval
      * @param array $approvedBy
      * @param array $approvers
      * @param array $approverGroups
+     * @param array $suggestedApprovers
      * @param Carbon $updatedAt
      * @param Carbon $createdAt
      * @param MergeRequest $mergeRequest
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         string $mergeStatus,
@@ -55,6 +61,7 @@ class MergeRequestApproval
         array $approvedBy,
         array $approvers,
         array $approverGroups,
+        array $suggestedApprovers,
         Carbon $updatedAt,
         Carbon $createdAt,
         MergeRequest $mergeRequest
@@ -65,6 +72,7 @@ class MergeRequestApproval
         $this->approvedBy = $approvedBy;
         $this->approvers = $approvers;
         $this->approverGroups = $approverGroups;
+        $this->suggestedApprovers = $suggestedApprovers;
         $this->updatedAt = $updatedAt;
         $this->createdAt = $createdAt;
         $this->mergeRequest = $mergeRequest;
@@ -84,6 +92,7 @@ class MergeRequestApproval
             $mergeRequestApproval['approved_by'],
             $mergeRequestApproval['approvers'],
             $mergeRequestApproval['approver_groups'],
+            $mergeRequestApproval['suggested_approvers'],
             new Carbon($mergeRequestApproval['updated_at']),
             new Carbon($mergeRequestApproval['created_at']),
             $mergeRequestApproval['merge_request']
@@ -139,6 +148,7 @@ class MergeRequestApproval
         foreach ($this->approvers as $approver) {
             $result[] = $approver->getUsername();
         }
+        sort($result, SORT_LOCALE_STRING);
 
         return $result;
     }
@@ -160,6 +170,29 @@ class MergeRequestApproval
         foreach ($this->approverGroups as $approverGroup) {
             $result[] = $approverGroup->getName();
         }
+        sort($result, SORT_LOCALE_STRING);
+
+        return $result;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getSuggestedApprovers(): array
+    {
+        return $this->suggestedApprovers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSuggestedApproverNames(): array
+    {
+        $result = [];
+        foreach ($this->suggestedApprovers as $approver) {
+            $result[] = $approver->getUsername();
+        }
+        sort($result, SORT_LOCALE_STRING);
 
         return $result;
     }

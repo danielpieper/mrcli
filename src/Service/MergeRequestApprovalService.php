@@ -60,28 +60,40 @@ class MergeRequestApprovalService
     {
         $mergeRequestApproval['merge_request'] = $mergeRequest;
 
-        $approvers = [];
-        foreach ($mergeRequestApproval['approvers'] as $approver) {
-            if (is_array($approver) && isset($approver['user'])) {
-                $approvers[] = User::fromArray($approver['user']);
-            }
-        }
-        $mergeRequestApproval['approvers'] = $approvers;
 
-        $approverGroups = [];
-        foreach ($mergeRequestApproval['approver_groups'] as $approverGroup) {
-            $approverGroups[] = Group::fromArray($approverGroup['group']);
-        }
-        $mergeRequestApproval['approver_groups'] = $approverGroups;
+        $this->transformApprovers($mergeRequestApproval['approved_by']);
+        $this->transformApprovers($mergeRequestApproval['approvers']);
+        $this->transformApprovers($mergeRequestApproval['suggested_approvers']);
 
-        $approvedBy = [];
-        foreach ($mergeRequestApproval['approved_by'] as $approver) {
-            if (is_array($approver) && isset($approver['user'])) {
-                $approvedBy[] = User::fromArray($approver['user']);
+        $approverIdList = array_map(function (User $approver) {
+            return $approver->getId();
+        }, $mergeRequestApproval['approvers']);
+        $mergeRequestApproval['suggested_approvers'] = array_filter(
+            $mergeRequestApproval['suggested_approvers'],
+            function (User $suggestedApprover) use ($approverIdList) {
+                return !in_array($suggestedApprover->getId(), $approverIdList);
             }
-        }
-        $mergeRequestApproval['approved_by'] = $approvers;
+        );
+
+        array_walk($mergeRequestApproval['approver_groups'], function (&$approverGroup) {
+            $approverGroup = Group::fromArray($approverGroup['group']);
+        });
 
         return MergeRequestApproval::fromArray($mergeRequestApproval);
+    }
+
+    /**
+     * @param array $approvers
+     * @return void
+     */
+    private function transformApprovers(array &$approvers): void
+    {
+        array_walk($approvers, function (&$approver) {
+            // suggested_approvers are not encapsulated in 'user'...
+            if (isset($approver['user'])) {
+                $approver = $approver['user'];
+            }
+            $approver = User::fromArray($approver);
+        });
     }
 }

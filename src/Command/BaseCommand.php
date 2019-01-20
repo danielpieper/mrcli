@@ -61,6 +61,14 @@ class BaseCommand extends Command
             ];
         }
 
+        $suggestedApproverNames = $mergeRequestApproval->getSuggestedApproverNames();
+        if (count($suggestedApproverNames) > 0) {
+            $rows[] = [
+                'Suggested approvers:',
+                implode(', ', $suggestedApproverNames),
+            ];
+        }
+
         $table = new Table($output);
         $table->setStyle('compact');
         $table->setRows($rows);
