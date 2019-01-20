@@ -9,6 +9,7 @@ use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
+use DanielPieper\MergeReminder\ValueObject\Project;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -48,9 +49,9 @@ class ProjectCommand extends BaseCommand
             ->setAliases(['p'])
             ->setDescription('Get a project\'s pending merge-requests')
             ->addArgument(
-                'project_ids',
+                'names',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-                'Gitlab project id\'s (separate by space)'
+                'Gitlab project names (separate by space)'
             )
             ->addOption(
                 'slack',
@@ -61,17 +62,16 @@ class ProjectCommand extends BaseCommand
     }
 
     /**
-     * @param array $idList
+     * @param array $names
      * @return array
-     * @throws \DanielPieper\MergeReminder\Exception\ProjectNotFoundException
      */
-    private function getProjects(array $idList): array
+    private function getProjects(array $names): array
     {
-        $projects = [];
-        foreach ($idList as $id) {
-            $projects[] = $this->projectService->get((int)$id);
-        }
-        return $projects;
+        $projects = $this->projectService->all();
+
+        return array_filter($projects, function (Project $project) use ($names) {
+            return in_array($project->getName(), $names);
+        });
     }
 
     /**
@@ -112,12 +112,14 @@ class ProjectCommand extends BaseCommand
      * @param OutputInterface $output
      * @return int|null|void
      * @throws \Exception
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $projects = $this->getProjects($input->getArgument('project_ids'));
+        $projects = $this->getProjects($input->getArgument('names'));
+        if (count($projects) == 0) {
+            $output->writeln('Project(s) not found.');
+            return;
+        }
 
         /** @var MergeRequest[] $mergeRequests */
         $mergeRequests = $this->getMergeRequests($projects);
