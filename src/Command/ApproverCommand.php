@@ -3,6 +3,7 @@
 namespace DanielPieper\MergeReminder\Command;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
+use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
 use DanielPieper\MergeReminder\Exception\UserNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
@@ -72,6 +73,19 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     }
 
     /**
+     * @return array
+     * @throws MergeRequestNotFoundException
+     */
+    private function getMergeRequests(): array
+    {
+        $mergeRequests = $this->mergeRequestService->all();
+        if (count($mergeRequests) == 0) {
+            throw new MergeRequestNotFoundException('No pending merge requests.');
+        }
+        return $mergeRequests;
+    }
+
+    /**
      * @param array $mergeRequests
      * @param User $user
      * @return array
@@ -83,14 +97,21 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
         foreach ($mergeRequests as $mergeRequest) {
             $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
         }
-        return array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) use ($user) {
-            $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
-            $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
-            $isApprover = in_array($user->getUsername(), $item->getApproverNames());
-            $isAssignee = $item->getMergeRequest()->getAssignee() == $user->getUsername();
+        $mergeRequestApprovals = array_filter(
+            $mergeRequestApprovals,
+            function (MergeRequestApproval $item) use ($user) {
+                $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
+                $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
+                $isApprover = in_array($user->getUsername(), $item->getApproverNames());
+                $isAssignee = $item->getMergeRequest()->getAssignee() == $user->getUsername();
 
-            return $hasApprovalsLeft && !$isWorkInProgress && ($isApprover || $isAssignee);
-        });
+                return $hasApprovalsLeft && !$isWorkInProgress && ($isApprover || $isAssignee);
+            }
+        );
+        if (count($mergeRequestApprovals) == 0) {
+            throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
+        }
+        return $mergeRequestApprovals;
     }
 
     /**
@@ -102,18 +123,8 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $user = $this->getUser($input->getArgument('username'));
-
-        $mergeRequests = $this->mergeRequestService->all();
-        if (count($mergeRequests) == 0) {
-            $output->writeln('No pending merge requests.');
-            return;
-        }
-
+        $mergeRequests = $this->getMergeRequests();
         $mergeRequestApprovals = $this->getMergeRequestApprovals($mergeRequests, $user);
-        if (count($mergeRequestApprovals) == 0) {
-            $output->writeln('No pending merge request approvals.');
-            return;
-        }
 
         usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
             if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
@@ -127,10 +138,12 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
             count($mergeRequestApprovals),
             $user->getName()
         );
-        $output->writeln([$messageText, '']);
 
-        foreach ($mergeRequestApprovals as $mergeRequestApproval) {
-            $this->printMergeRequestApproval($output, $mergeRequestApproval);
+        if (!$output->isQuiet()) {
+            $output->writeln([$messageText, '']);
+            foreach ($mergeRequestApprovals as $mergeRequestApproval) {
+                $this->printMergeRequestApproval($output, $mergeRequestApproval);
+            }
         }
 
         if ($input->getOption('slack')) {

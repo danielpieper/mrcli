@@ -3,6 +3,8 @@
 namespace DanielPieper\MergeReminder\Command;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
+use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
+use DanielPieper\MergeReminder\Exception\ProjectNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
@@ -61,26 +63,33 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
     /**
      * @param array $names
      * @return array
+     * @throws ProjectNotFoundException
      */
     private function getProjects(array $names): array
     {
         $projects = $this->projectService->all();
-
-        return array_filter($projects, function (Project $project) use ($names) {
+        $projects = array_filter($projects, function (Project $project) use ($names) {
             return in_array($project->getName(), $names);
         });
+        if (count($projects) == 0) {
+            throw new ProjectNotFoundException('Projects not found.');
+        }
+        return $projects;
     }
 
     /**
      * @param array $projects
      * @return array
-     * @throws \Exception
+     * @throws MergeRequestNotFoundException
      */
     private function getMergeRequests(array $projects): array
     {
         $mergeRequests = [];
         foreach ($projects as $project) {
             $mergeRequests = array_merge($mergeRequests, $this->mergeRequestService->allByProject($project));
+        }
+        if (count($mergeRequests) == 0) {
+            throw new MergeRequestNotFoundException('No pending merge requests.');
         }
         return $mergeRequests;
     }
@@ -96,12 +105,16 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
         foreach ($mergeRequests as $mergeRequest) {
             $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
         }
-        return array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
+        $mergeRequestApprovals = array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
             $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
             $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
 
             return $hasApprovalsLeft && !$isWorkInProgress;
         });
+        if (count($mergeRequestApprovals) == 0) {
+            throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
+        }
+        return $mergeRequestApprovals;
     }
 
     /**
@@ -112,24 +125,10 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $projects = $this->getProjects($input->getArgument('names'));
-        if (count($projects) == 0) {
-            $output->writeln('Projects not found.');
-            return;
-        }
-
-        /** @var MergeRequest[] $mergeRequests */
+        $projectNames = $input->getArgument('names');
+        $projects = $this->getProjects($projectNames);
         $mergeRequests = $this->getMergeRequests($projects);
-        if (count($mergeRequests) == 0) {
-            $output->writeln('No pending merge requests.');
-            return;
-        }
-
         $mergeRequestApprovals = $this->getMergeRequestApprovals($mergeRequests);
-        if (count($mergeRequestApprovals) == 0) {
-            $output->writeln('No pending merge request approvals.');
-            return;
-        }
 
         usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
             if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
@@ -138,19 +137,17 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
             return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
         });
 
-        $projectNames = array_map(function (Project $project) {
-            return $project->getName();
-        }, $projects);
-
         $messageText = sprintf(
             '%u Pending merge requests for projects %s:',
             count($mergeRequestApprovals),
             implode(', ', $projectNames)
         );
-        $output->writeln([$messageText, '']);
 
-        foreach ($mergeRequestApprovals as $mergeRequestApproval) {
-            $this->printMergeRequestApproval($output, $mergeRequestApproval);
+        if (!$output->isQuiet()) {
+            $output->writeln([$messageText, '']);
+            foreach ($mergeRequestApprovals as $mergeRequestApproval) {
+                $this->printMergeRequestApproval($output, $mergeRequestApproval);
+            }
         }
 
         if ($input->getOption('slack')) {
