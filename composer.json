@@ -43,7 +43,7 @@
   },
   "minimum-stability": "stable",
   "bin": [
-    "console.php"
+    "bin/mrcli"
   ],
   "repositories": [
     {
