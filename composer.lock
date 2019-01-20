@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b703ca7d1cd02ba65862b691d19eb0a",
+    "content-hash": "e119408fc3c1654c95e423880ae5a20b",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -309,16 +309,16 @@
         },
         {
             "name": "m4tthumphrey/php-gitlab-api",
-            "version": "9.11.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/m4tthumphrey/php-gitlab-api.git",
-                "reference": "3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825"
+                "url": "https://github.com/danielpieper/php-gitlab-api.git",
+                "reference": "63dcde7a980c8551f7196f1eec359d639485b940"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/m4tthumphrey/php-gitlab-api/zipball/3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825",
-                "reference": "3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825",
+                "url": "https://api.github.com/repos/danielpieper/php-gitlab-api/zipball/63dcde7a980c8551f7196f1eec359d639485b940",
+                "reference": "63dcde7a980c8551f7196f1eec359d639485b940",
                 "shasum": ""
             },
             "require": {
@@ -348,23 +348,27 @@
                     "Gitlab\\": "lib/Gitlab/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Gitlab\\Tests\\": "test/Gitlab/Tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Thibault Duplessis",
-                    "email": "thibault.duplessis@gmail.com",
-                    "homepage": "http://ornicar.github.com"
+                    "name": "Matt Humphrey",
+                    "homepage": "http://m4tt.io"
                 },
                 {
                     "name": "KnpLabs Team",
                     "homepage": "http://knplabs.com"
                 },
                 {
-                    "name": "Matt Humphrey",
-                    "homepage": "http://m4tt.io"
+                    "name": "Thibault Duplessis",
+                    "email": "thibault.duplessis@gmail.com",
+                    "homepage": "http://ornicar.github.com"
                 }
             ],
             "description": "GitLab API client",
@@ -373,7 +377,10 @@
                 "api",
                 "gitlab"
             ],
-            "time": "2018-11-16T21:05:00+00:00"
+            "support": {
+                "source": "https://github.com/danielpieper/php-gitlab-api/tree/master"
+            },
+            "time": "2019-01-20T07:59:31+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -2591,16 +2598,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.1",
+            "version": "7.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f"
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c23d78776ad415d5506e0679723cb461d71f488f",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7c89093bd00f7d5ddf0ab81dee04f801416b4944",
+                "reference": "7c89093bd00f7d5ddf0ab81dee04f801416b4944",
                 "shasum": ""
             },
             "require": {
@@ -2671,7 +2678,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-12T07:20:32+00:00"
+            "time": "2019-01-15T08:19:08+00:00"
         },
         {
             "name": "pimple/pimple",
@@ -3962,7 +3969,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "m4tthumphrey/php-gitlab-api": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -3,8 +3,6 @@
 namespace DanielPieper\MergeReminder\Service;
 
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
-use DanielPieper\MergeReminder\ValueObject\User;
-use DanielPieper\MergeReminder\ValueObject\Group;
 use Razorpay\Slack\Attachment;
 use Razorpay\Slack\Client;
 
