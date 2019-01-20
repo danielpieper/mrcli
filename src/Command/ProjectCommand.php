@@ -47,7 +47,7 @@ class ProjectCommand extends BaseCommand
         $this
             ->setName('project')
             ->setAliases(['p'])
-            ->setDescription('Get a project\'s pending merge-requests')
+            ->setDescription('Get pending merge-requests by projects')
             ->addArgument(
                 'names',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
@@ -117,7 +117,7 @@ class ProjectCommand extends BaseCommand
     {
         $projects = $this->getProjects($input->getArgument('names'));
         if (count($projects) == 0) {
-            $output->writeln('Project(s) not found.');
+            $output->writeln('Projects not found.');
             return;
         }
 

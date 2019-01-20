@@ -3,6 +3,7 @@
 namespace DanielPieper\MergeReminder\ServiceProvider;
 
 use DanielPieper\MergeReminder\Command\ApproverCommand;
+use DanielPieper\MergeReminder\Command\OverviewCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
@@ -22,7 +23,9 @@ class AppServiceProvider extends AbstractServiceProvider
         MergeRequestApprovalService::class,
         ProjectService::class,
         SlackService::class,
+        OverviewCommand::class,
         ProjectCommand::class,
+        ApproverCommand::class,
     ];
 
     /**
@@ -49,6 +52,10 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->add(SlackService::class)
             ->addArgument(\Razorpay\Slack\Client::class);
 
+        $container->add(OverviewCommand::class)
+            ->addArgument(MergeRequestService::class)
+            ->addArgument(MergeRequestApprovalService::class);
+
         $container->add(ProjectCommand::class)
             ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
@@ -57,7 +64,6 @@ class AppServiceProvider extends AbstractServiceProvider
 
         $container->add(ApproverCommand::class)
             ->addArgument(UserService::class)
-            ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class)
             ->addArgument(SlackService::class);

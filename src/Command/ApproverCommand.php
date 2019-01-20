@@ -6,7 +6,6 @@ use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\UserNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
-use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\SlackService;
 use DanielPieper\MergeReminder\Service\UserService;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
@@ -21,9 +20,6 @@ class ApproverCommand extends BaseCommand
     /** @var UserService */
     private $userService;
 
-    /** @var ProjectService */
-    private $projectService;
-
     /** @var MergeRequestService */
     private $mergeRequestService;
 
@@ -35,13 +31,11 @@ class ApproverCommand extends BaseCommand
 
     public function __construct(
         UserService $userService,
-        ProjectService $projectService,
         MergeRequestService $mergeRequestService,
         MergeRequestApprovalService $mergeRequestApprovalService,
         SlackService $slackService
     ) {
         $this->userService = $userService;
-        $this->projectService = $projectService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
         $this->slackService = $slackService;

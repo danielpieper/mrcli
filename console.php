@@ -4,6 +4,7 @@
 require __DIR__.'/vendor/autoload.php';
 
 use DanielPieper\MergeReminder\Command\ApproverCommand;
+use DanielPieper\MergeReminder\Command\OverviewCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
 use Symfony\Component\Console\Application;
 
@@ -21,6 +22,7 @@ $container->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\Gitla
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\AppServiceProvider::class);
 
 $app = new Application('mrcli', '@package_version@');
+$app->add($container->get(OverviewCommand::class));
 $app->add($container->get(ProjectCommand::class));
 $app->add($container->get(ApproverCommand::class));
 $app->setDefaultCommand($container->get(ApproverCommand::class)->getName());
