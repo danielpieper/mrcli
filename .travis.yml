@@ -1,15 +1,11 @@
 language: php
-
 sudo: false
-
 branches:
   only:
     - master
-
 cache:
   directories:
-    - $HOME/.composer/cache/files
-
+    - "$HOME/.composer/cache/files"
 matrix:
   include:
     - php: '7.1'
@@ -22,17 +18,15 @@ matrix:
   allow_failures:
     - php: nightly
   fast_finish: true
-
 before_install:
-    - |
-      if [ "$COVERAGE" != "true" ]; then
-          phpenv config-rm xdebug.ini || true
-      fi
-
+  - composer config --global github-oauth.github.com "$GITHUB_TOKEN"
+  - |
+    if [ "$COVERAGE" != "true" ]; then
+        phpenv config-rm xdebug.ini || true
+    fi
 install:
   - set -eo pipefail
   - composer update --no-interaction --no-progress --no-suggest --prefer-dist $COMPOSER_FLAGS
-
 script:
   - |
     if [ "$COVERAGE" == "true" ]; then
@@ -40,6 +34,8 @@ script:
     else
         make test
     fi
-
 notifications:
-    email: false
+  email: false
+env:
+  global:
+    secure: AvpR2OTkwFPL4i641aBW4QQ3vO21pIKYPHExT52H+HWTAWQxdQCiS4dQYONZD7RVIMjk4FBWVxqR22dXt5D3GPJxhIlfo3ohEbsRTmPTMrY26XwUj24Y0nf6aNmd2atpc/AKzGbzFLKixS8uJY5SLy2ULDS5IjZyJZ4GnmuLVX/qhSdvPUeqL2DgQTGKXkuSeyYzQVDuMNhg1ZVC4owznG05sya2TlYhGE6r8murqW2rtsqOgjNcsbrtUzeA8+1PRs3952Kk1W8mr9ehITFw8E0hoG7RCefpnt+mOJb6TrmjWbk+quW8cSRQrpq9e1Jv2eAcN1Nrg/FatFxVZNECVGFY1QGDpFJ9EBG4WXN8RxebYXOuSnKz8iJd9bYwr7ofAYPN3XtpyYFWzRXtIreiEij3rnITE4/KNP42RuBo7mUD5KA3UKBBDXoN+gJR00WFPNVn96Yt5zQxfEgA+EqJDtM5+NN9hY94pCRAaSR3P2x3Unog8zY2+i1ODrPK6wAIDutWK+Nb72gC6A+WdnXlgvib/60pu3RC2eZjRldppnR44ulXZwAQyElYk85ub7wfBV4BcApl0iT1YSDan1kICvMpP2d9R0edBWBOtLph8n+PtIpE8+Z74rhs0Ma60iFuAFWNWmb/fQ16KrxdjXuu7wgCL6HCCG2/6aAtxbBntDA=
