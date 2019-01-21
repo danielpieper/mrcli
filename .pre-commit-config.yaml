@@ -18,9 +18,9 @@
     entry: vendor/bin/phpcpd
     language: script
     args: ['src/']
-#  - id: phpunit
-#    name: 'PHP Unit Tests'
-#    files: \.(php)$
-#    entry: vendor/bin/phpunit
-#    language: script
-#    args: ['-c', 'phpunit.xml.dist', '--no-coverage']
+  - id: phpunit
+    name: 'PHP Unit Tests'
+    files: \.(php)$
+    entry: vendor/bin/phpunit
+    language: script
+    args: ['-c', 'phpunit.xml', '--no-coverage']
