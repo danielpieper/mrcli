@@ -19,6 +19,11 @@
       "DanielPieper\\MergeReminder\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "DanielPieper\\MergeReminder\\Tests\\": "tests/"
+    }
+  },
   "require-dev": {
     "infection/infection": "^0.7.0",
     "phpunit/phpunit": "^7.0",
