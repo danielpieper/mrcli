@@ -20,6 +20,17 @@ Install the latest version with
 $ composer global require danielpieper/mrcli
 ```
 
+## Configuration
+
+`mrcli` is configured using environment variables. 
+The `GITLAB_TOKEN` is required. Create a token with the `api` scope: https://gitlab.com/profile/personal_access_tokens
+```dotenv
+GITLAB_URL=https://gitlab.com # optional, set for on-premise installations
+GITLAB_TOKEN=<gitlab token> # create gitlab token with api access: https://gitlab.com/profile/personal_access_tokens
+SLACK_WEBHOOK_URL=<slack webhook url> # optional
+SLACK_CHANNEL=<slack channel name, for example #merge_requests> # optional
+```
+
 ## Basic Usage
 
 ```bash
