@@ -20,6 +20,7 @@
     args: ['src/']
   - id: phpunit
     name: 'PHP Unit Tests'
+    pass_filenames: false
     files: \.(php)$
     entry: vendor/bin/phpunit
     language: script

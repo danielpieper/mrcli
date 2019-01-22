@@ -13,25 +13,6 @@ clean:		## Clean all created artifacts
 clean:
 	git clean --exclude=.idea/ -fdx
 
-build:		## Build the PHAR
-build:
-	# Cleanup existing artefacts
-	rm -f dist/mrcli.phar
-
-	# Remove unnecessary packages
-	composer install --no-dev --prefer-dist
-
-	# Re-dump the loader to account for the prefixing
-	# and optimize the loader
-	composer dump-autoload --classmap-authoritative --no-dev
-
-	# Build the PHAR
-	box compile $(args)
-
-	# Install back all the dependencies
-	composer install
-
-
 ##
 ## Tests
 ##---------------------------------------------------------------------------
@@ -87,6 +68,3 @@ vendor/bin/phpcs: composer.lock
 
 vendor/bin/phpmd: composer.lock
 	composer install
-
-mrcli.phar: src vendor
-	$(MAKE) build

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 class MergeRequestApproval
 {
     public const MERGE_STATUS_CANNOT_BE_MERGED = 'cannot_be_merged';
+    public const MERGE_STATUS_CAN_BE_MERGED = 'can_be_merged';
 
     /** @var string */
     private $mergeStatus;
