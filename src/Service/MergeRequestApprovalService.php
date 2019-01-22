@@ -60,18 +60,22 @@ class MergeRequestApprovalService
     {
         $mergeRequestApproval['merge_request'] = $mergeRequest;
 
-
         $this->transformApprovers($mergeRequestApproval['approved_by']);
         $this->transformApprovers($mergeRequestApproval['approvers']);
         $this->transformApprovers($mergeRequestApproval['suggested_approvers']);
 
-        $approverIdList = array_map(function (User $approver) {
-            return $approver->getId();
-        }, $mergeRequestApproval['approvers']);
-        $mergeRequestApproval['suggested_approvers'] = array_filter(
+        $mergeRequestApproval['suggested_approvers'] = array_udiff(
             $mergeRequestApproval['suggested_approvers'],
-            function (User $suggestedApprover) use ($approverIdList) {
-                return !in_array($suggestedApprover->getId(), $approverIdList);
+            $mergeRequestApproval['approvers'],
+            function (User $userA, User $userB) {
+                return $userA->getId() <=> $userB->getId();
+            }
+        );
+        $mergeRequestApproval['approvers'] = array_udiff(
+            $mergeRequestApproval['approvers'],
+            $mergeRequestApproval['approved_by'],
+            function (User $userA, User $userB) {
+                return $userA->getId() <=> $userB->getId();
             }
         );
 

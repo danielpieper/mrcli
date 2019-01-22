@@ -26,7 +26,7 @@ tu: vendor/bin/phpunit
 
 tc:		## Run the unit tests with code coverage
 tc: vendor/bin/phpunit
-	phpdbg -qrr vendor/bin/phpunit --coverage-html=dist/coverage --coverage-text
+	phpdbg -qrr vendor/bin/phpunit --coverage-html=coverage --coverage-text
 
 tm:		## Run Infection
 tm:	vendor/bin/phpunit

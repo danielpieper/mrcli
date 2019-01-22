@@ -4,6 +4,7 @@ namespace DanielPieper\MergeReminder;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
+use DanielPieper\MergeReminder\ValueObject\Group;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\Project;
@@ -27,30 +28,97 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->faker = Factory::create('de_DE');
     }
 
-    public function testFind()
+    public function testFindApproversDoNotContainApprovedBy()
+    {
+        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+
+        $approvers = $expectedApprovers = [];
+        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+            $gitlabUser = $this->createGitlabUser();
+            $approvers[] = $gitlabUser;
+            $expectedApprovers[] = User::fromArray($gitlabUser);
+        }
+        $approvedBy = [$this->createGitlabUser()];
+        $approvers += $approvedBy;
+
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
+            $approvedBy,
+            $approvers
+        );
+
+        $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
+        $service = new MergeRequestApprovalService($gitlabClientMock);
+        $actual = $service->find($mergeRequest);
+
+        $this->assertEquals($expectedApprovers, $actual->getApprovers());
+    }
+
+    public function testFindSuggestedApproversDoNotContainApprovers()
+    {
+        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+
+        $suggestedApprovers = $expectedSuggestedApprovers = [];
+        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+            $gitlabUser = $this->createGitlabUser();
+            $suggestedApprovers[] = $gitlabUser;
+            $expectedSuggestedApprovers[] = User::fromArray($gitlabUser);
+        }
+        $approvers = [];
+        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+            $approvers[] = $this->createGitlabUser();
+        }
+        $suggestedApprovers += $approvers;
+
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
+            [],
+            $approvers,
+            $suggestedApprovers
+        );
+
+        $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
+        $service = new MergeRequestApprovalService($gitlabClientMock);
+        $actual = $service->find($mergeRequest);
+
+        $this->assertEquals($expectedSuggestedApprovers, $actual->getSuggestedApprovers());
+    }
+
+    public function testFindReturnsApproverGroups()
+    {
+        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+
+        $approverGroups = $expectedApproverGroups = [];
+        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+            $gitlabGroup = $this->createGitlabGroup();
+            $approverGroups[] = $gitlabGroup;
+            $expectedApproverGroups[] = Group::fromArray($gitlabGroup);
+        }
+
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
+            [],
+            [],
+            [],
+            $approverGroups
+        );
+
+        $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
+        $service = new MergeRequestApprovalService($gitlabClientMock);
+        $actual = $service->find($mergeRequest);
+
+        $this->assertEquals($expectedApproverGroups, $actual->getApproverGroups());
+    }
+
+    public function testGetReturnsMergeRequest()
     {
         $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
         $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval();
 
-        $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
-        $gitlabMergeRequestsMock
-            ->expects($this->once())
-            ->method('approvals')
-            ->with($this->equalTo($mergeRequest->getProject()->getId(), $mergeRequest->getId()))
-            ->willReturn($gitlabMergeRequestApproval);
-
-        $gitlabClientMock = $this->createMock(Client::class);
-        $gitlabClientMock
-            ->expects($this->once())
-            ->method('mergeRequests')
-            ->willReturn($gitlabMergeRequestsMock);
-
+        $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
         $service = new MergeRequestApprovalService($gitlabClientMock);
-        $actual = $service->find($mergeRequest);
+        $actual = $service->get($mergeRequest);
 
-        // TODO: improve assertions for transform
         $this->assertEquals($mergeRequest, $actual->getMergeRequest());
     }
+
 
     public function testGetThrowsException()
     {
@@ -90,6 +158,24 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertNull($actual);
     }
 
+    private function createGitlabClientMock(MergeRequest $mergeRequest, array $gitlabMergeRequestApproval)
+    {
+        $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
+        $gitlabMergeRequestsMock
+            ->expects($this->once())
+            ->method('approvals')
+            ->with($this->equalTo($mergeRequest->getProject()->getId(), $mergeRequest->getId()))
+            ->willReturn($gitlabMergeRequestApproval);
+
+        $gitlabClientMock = $this->createMock(Client::class);
+        $gitlabClientMock
+            ->expects($this->once())
+            ->method('mergeRequests')
+            ->willReturn($gitlabMergeRequestsMock);
+
+        return $gitlabClientMock;
+    }
+
     private function createGitlabProject(): array
     {
         return [
@@ -111,20 +197,50 @@ class MergeRequestApprovalServiceTest extends TestCase
         ];
     }
 
-    private function createGitlabMergeRequestApproval(): array
+    private function createGitlabGroup(): array
     {
+        return [
+            'id' => $this->faker->randomNumber(),
+            'name' => $this->faker->firstName . ' ' . $this->faker->lastName,
+            'avatar_url' => $this->faker->imageUrl(),
+            'web_url' => $this->faker->url(),
+        ];
+    }
+
+    private function createGitlabMergeRequestApproval(
+        array $approvedBy = [],
+        array $approvers = [],
+        array $suggestedApprovers = [],
+        array $approverGroups = []
+    ): array {
+        $mapUser = function (array $user) {
+            return [
+                'user' => array_merge(
+                    $this->createGitlabUser(),
+                    $user
+                )
+            ];
+        };
+        $approvedBy = array_map($mapUser, $approvedBy);
+        $approvers = array_map($mapUser, $approvers);
+        $suggestedApprovers = array_map($mapUser, $suggestedApprovers);
+        $approverGroups = array_map(function (array $group) {
+            return [
+                'group' => array_merge(
+                    $this->createGitlabGroup(),
+                    $group
+                )
+            ];
+        }, $approverGroups);
+
         return [
             'merge_status' => MergeRequestApproval::MERGE_STATUS_CAN_BE_MERGED,
             'approvals_required' => $this->faker->numberBetween(1, 4),
             'approvals_left' => $this->faker->numberBetween(1, 3),
-            'approved_by' => [],
-            'approver_groups' => [],
-            'approvers' => [
-                ['user' => $this->createGitlabUser()],
-                ['user' => $this->createGitlabUser()],
-                ['user' => $this->createGitlabUser()],
-            ],
-            'suggested_approvers' => [],
+            'approved_by' => $approvedBy,
+            'approver_groups' => $approverGroups,
+            'approvers' => $approvers,
+            'suggested_approvers' => $suggestedApprovers,
             'updated_at' => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
             'created_at' => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
         ];
