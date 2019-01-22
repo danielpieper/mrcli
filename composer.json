@@ -1,12 +1,12 @@
 {
   "name": "danielpieper/mrcli",
-  "description": "A simple cli app to announce merge requests to slack",
+  "description": "GitLab pending merge requests overview",
   "keywords": [
     "merge request",
     "slack",
     "gitlab"
   ],
-  "type": "project",
+  "type": "library",
   "license": "MIT",
   "authors": [
     {
@@ -14,6 +14,10 @@
       "email": "github@daniel-pieper.com"
     }
   ],
+  "support": {
+    "email": "mrcli@daniel-pieper.com",
+    "issues": "https://github.com/danielpieper/mrcli/issues"
+  },
   "autoload": {
     "psr-4": {
       "DanielPieper\\MergeReminder\\": "src"
