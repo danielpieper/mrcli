@@ -100,9 +100,9 @@ class TestCase extends PHPUnitTestCase
             'state' => MergeRequest::STATE_OPENED,
             'web_url' => $this->faker->url,
             'work_in_progress' => false,
-            'project' => null,
-            'author' => null,
-            'assignee' => null,
+//            'project' => null,
+//            'author' => null,
+//            'assignee' => null,
         ], $attributes);
     }
 
