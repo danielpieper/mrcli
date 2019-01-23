@@ -63,32 +63,29 @@ class MergeRequestService
             $createdAfter = new Carbon('1 month ago');
         }
 
-        $parameters = [
-            'page' => 1,
-            'per_page' => 100,
-            'state' => 'opened',
-            'scope' => 'all',
-            'created_after' => $createdAfter,
-        ];
-
-        $pager = new ResultPager($this->gitlabClient);
-        $mergeRequests = $pager->fetchAll(
-            $this->gitlabClient->mergeRequests(),
-            'all',
-            [
-                null,
-                $parameters,
-            ]
-        );
-
-        $projects = [];
+        $mergeRequests = [];
         foreach ($this->projectService->all() as $project) {
-            $projects[$project->getId()] = $project;
+            $pager = new ResultPager($this->gitlabClient);
+            $projectMergeRequests = $pager->fetchAll(
+                $this->gitlabClient->mergeRequests(),
+                'all',
+                [
+                    $project->getId(),
+                    [
+                        'page' => 1,
+                        'per_page' => 100,
+                        'state' => 'opened',
+                        'scope' => 'all',
+                        'created_after' => $createdAfter,
+                    ]
+                ]
+            );
+            foreach ($projectMergeRequests as $projectMergeRequest) {
+                $mergeRequests[] = $this->transform($project, $projectMergeRequest);
+            }
         }
 
-        return array_map(function ($mergeRequest) use ($projects) {
-            return $this->transform($projects[$mergeRequest['project_id']], $mergeRequest);
-        }, $mergeRequests);
+        return $mergeRequests;
     }
 
     /**

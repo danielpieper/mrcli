@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a0ebb92ebb1e6300fc15c83d78d6dab",
+    "content-hash": "1b444f217052ed84535aa5da40a14bb9",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -309,16 +309,16 @@
         },
         {
             "name": "m4tthumphrey/php-gitlab-api",
-            "version": "dev-master",
+            "version": "9.11.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/danielpieper/php-gitlab-api.git",
-                "reference": "63dcde7a980c8551f7196f1eec359d639485b940"
+                "url": "https://github.com/m4tthumphrey/php-gitlab-api.git",
+                "reference": "3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/danielpieper/php-gitlab-api/zipball/63dcde7a980c8551f7196f1eec359d639485b940",
-                "reference": "63dcde7a980c8551f7196f1eec359d639485b940",
+                "url": "https://api.github.com/repos/m4tthumphrey/php-gitlab-api/zipball/3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825",
+                "reference": "3c7f6f6f7c2c561fff6d94d2ffb120289fa8f825",
                 "shasum": ""
             },
             "require": {
@@ -348,27 +348,23 @@
                     "Gitlab\\": "lib/Gitlab/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Gitlab\\Tests\\": "test/Gitlab/Tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Matt Humphrey",
-                    "homepage": "http://m4tt.io"
+                    "name": "Thibault Duplessis",
+                    "email": "thibault.duplessis@gmail.com",
+                    "homepage": "http://ornicar.github.com"
                 },
                 {
                     "name": "KnpLabs Team",
                     "homepage": "http://knplabs.com"
                 },
                 {
-                    "name": "Thibault Duplessis",
-                    "email": "thibault.duplessis@gmail.com",
-                    "homepage": "http://ornicar.github.com"
+                    "name": "Matt Humphrey",
+                    "homepage": "http://m4tt.io"
                 }
             ],
             "description": "GitLab API client",
@@ -377,10 +373,7 @@
                 "api",
                 "gitlab"
             ],
-            "support": {
-                "source": "https://github.com/danielpieper/php-gitlab-api/tree/master"
-            },
-            "time": "2019-01-20T07:59:31+00:00"
+            "time": "2018-11-16T21:05:00+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -616,16 +609,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.5.2",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "ffef11d54171336d841a34816a35bc035fb8cef0"
+                "reference": "02b7ea21eafa0757af04140890a67d8ed45f83b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/ffef11d54171336d841a34816a35bc035fb8cef0",
-                "reference": "ffef11d54171336d841a34816a35bc035fb8cef0",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/02b7ea21eafa0757af04140890a67d8ed45f83b2",
+                "reference": "02b7ea21eafa0757af04140890a67d8ed45f83b2",
                 "shasum": ""
             },
             "require": {
@@ -635,8 +628,7 @@
                 "nyholm/psr7": "<1.0"
             },
             "require-dev": {
-                "henrikbjorn/phpspec-code-coverage": "^2.0.2",
-                "php-http/httplug": "^1.0|^2.0",
+                "php-http/httplug": "^1.0 || ^2.0",
                 "php-http/message-factory": "^1.0",
                 "phpspec/phpspec": "^2.4",
                 "puli/composer-plugin": "1.0.0-beta10"
@@ -677,7 +669,7 @@
                 "message",
                 "psr7"
             ],
-            "time": "2018-12-31T07:31:26+00:00"
+            "time": "2019-01-23T12:41:22+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -4285,7 +4277,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -4540,9 +4532,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "m4tthumphrey/php-gitlab-api": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
