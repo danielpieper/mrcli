@@ -5,6 +5,7 @@ namespace DanielPieper\MergeReminder\Command;
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
 use DanielPieper\MergeReminder\Exception\UserNotFoundException;
+use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\UserService;
@@ -30,14 +31,19 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     /** @var MergeRequestApprovalService */
     private $mergeRequestApprovalService;
 
+    /** @var MergeRequestApprovalFilter */
+    private $mergeRequestApprovalFilter;
+
     public function __construct(
         UserService $userService,
         MergeRequestService $mergeRequestService,
-        MergeRequestApprovalService $mergeRequestApprovalService
+        MergeRequestApprovalService $mergeRequestApprovalService,
+        MergeRequestApprovalFilter $mergeRequestApprovalFilter
     ) {
         $this->userService = $userService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
+        $this->mergeRequestApprovalFilter = $mergeRequestApprovalFilter;
         parent::__construct();
     }
 
@@ -91,43 +97,6 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     }
 
     /**
-     * @param array $mergeRequests
-     * @param User $user
-     * @param bool $includeSuggestedApprovers
-     * @return array
-     * @throws MergeRequestApprovalNotFoundException
-     *
-     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
-     */
-    private function getMergeRequestApprovals(
-        array $mergeRequests,
-        User $user,
-        bool $includeSuggestedApprovers = false
-    ): array {
-        $mergeRequestApprovals = [];
-        foreach ($mergeRequests as $mergeRequest) {
-            $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
-        }
-        $mergeRequestApprovals = array_filter(
-            $mergeRequestApprovals,
-            function (MergeRequestApproval $item) use ($user, $includeSuggestedApprovers) {
-                $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
-                $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
-                $isApprover = in_array($user->getUsername(), $item->getApproverNames());
-                $isAssignee = $item->getMergeRequest()->getAssignee() == $user->getUsername();
-                $isSuggestedApprover = $includeSuggestedApprovers
-                    && in_array($user->getUsername(), $item->getSuggestedApproverNames()) ;
-
-                return $hasApprovalsLeft && !$isWorkInProgress && ($isApprover || $isAssignee || $isSuggestedApprover);
-            }
-        );
-        if (count($mergeRequestApprovals) == 0) {
-            throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
-        }
-        return $mergeRequestApprovals;
-    }
-
-    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|null|void
@@ -137,18 +106,10 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     {
         $user = $this->getUser(/** @scrutinizer ignore-type */ $input->getArgument('username'));
         $mergeRequests = $this->getMergeRequests();
-        $mergeRequestApprovals = $this->getMergeRequestApprovals(
+        $mergeRequestApprovals = $this->mergeRequestApprovalService->getByMergeRequests(
             $mergeRequests,
-            $user,
-            $input->getOption('include-suggested')
+            $this->mergeRequestApprovalFilter->addUser($user, $input->getOption('include-suggested'))
         );
-
-        usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
-            if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
-                return 0;
-            }
-            return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
-        });
 
         $messageText = sprintf(
             '%u Pending merge requests for %s:',

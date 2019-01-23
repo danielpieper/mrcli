@@ -37,37 +37,19 @@ class BaseCommand extends Command
             ],
         ];
 
-
         if ($mergeRequestApproval->getUpdatedAt()->diffInDays($mergeRequestApproval->getCreatedAt()) > 0) {
             $rows[] = [
                 'Updated:',
                 $mergeRequestApproval->getUpdatedAt()->shortRelativeToNowDiffForHumans(),
             ];
         }
-
-        $approverNames = $mergeRequestApproval->getApproverNames();
-        if (count($approverNames) > 0) {
-            $rows[] = [
-                'Approvers:',
-                implode(', ', $approverNames),
-            ];
-        }
-
-        $approverGroupNames = $mergeRequestApproval->getApproverGroupNames();
-        if (count($approverGroupNames) > 0) {
-            $rows[] = [
-                'Approver Groups:',
-                implode(', ', $approverGroupNames),
-            ];
-        }
-
-        $suggestedApproverNames = $mergeRequestApproval->getSuggestedApproverNames();
-        if (count($suggestedApproverNames) > 0) {
-            $rows[] = [
-                'Suggested approvers:',
-                implode(', ', $suggestedApproverNames),
-            ];
-        }
+        $this->addApproverListTableRow($rows, 'Approvers:', $mergeRequestApproval->getApproverNames());
+        $this->addApproverListTableRow($rows, 'Approver groups:', $mergeRequestApproval->getApproverGroupNames());
+        $this->addApproverListTableRow(
+            $rows,
+            'Suggested approvers:',
+            $mergeRequestApproval->getSuggestedApproverNames()
+        );
 
         $table = new Table($output);
         $table->setStyle('compact');
@@ -75,6 +57,21 @@ class BaseCommand extends Command
         $table->render();
 
         $output->writeln('');
+    }
+
+    /**
+     * @param array $rows
+     * @param $title
+     * @param array $approverNames
+     */
+    private function addApproverListTableRow(array &$rows, $title, array $approverNames): void
+    {
+        if (count($approverNames) > 0) {
+            array_push($rows, [
+                $title,
+                implode(', ', $approverNames),
+            ]);
+        }
     }
 
     /**

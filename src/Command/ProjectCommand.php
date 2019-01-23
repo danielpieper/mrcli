@@ -2,16 +2,14 @@
 
 namespace DanielPieper\MergeReminder\Command;
 
-use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
 use DanielPieper\MergeReminder\Exception\ProjectNotFoundException;
+use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\SlackServiceAwareInterface;
 use DanielPieper\MergeReminder\SlackServiceAwareTrait;
-use DanielPieper\MergeReminder\ValueObject\MergeRequest;
-use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\Project;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,14 +29,19 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
     /** @var MergeRequestApprovalService */
     private $mergeRequestApprovalService;
 
+    /** @var MergeRequestApprovalFilter */
+    private $mergeRequestApprovalFilter;
+
     public function __construct(
         ProjectService $projectService,
         MergeRequestService $mergeRequestService,
-        MergeRequestApprovalService $mergeRequestApprovalService
+        MergeRequestApprovalService $mergeRequestApprovalService,
+        MergeRequestApprovalFilter $mergeRequestApprovalFilter
     ) {
         $this->projectService = $projectService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
+        $this->mergeRequestApprovalFilter = $mergeRequestApprovalFilter;
         parent::__construct();
     }
 
@@ -95,29 +98,6 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
     }
 
     /**
-     * @param array $mergeRequests
-     * @return array
-     * @throws MergeRequestApprovalNotFoundException
-     */
-    private function getMergeRequestApprovals(array $mergeRequests): array
-    {
-        $mergeRequestApprovals = [];
-        foreach ($mergeRequests as $mergeRequest) {
-            $mergeRequestApprovals[] = $this->mergeRequestApprovalService->get($mergeRequest);
-        }
-        $mergeRequestApprovals = array_filter($mergeRequestApprovals, function (MergeRequestApproval $item) {
-            $hasApprovalsLeft = $item->getApprovalsLeft() > 0;
-            $isWorkInProgress = $item->getMergeRequest()->isWorkInProgress();
-
-            return $hasApprovalsLeft && !$isWorkInProgress;
-        });
-        if (count($mergeRequestApprovals) == 0) {
-            throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
-        }
-        return $mergeRequestApprovals;
-    }
-
-    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|null|void
@@ -128,14 +108,10 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
         $projectNames = $input->getArgument('names');
         $projects = $this->getProjects(/** @scrutinizer ignore-type */ $projectNames);
         $mergeRequests = $this->getMergeRequests($projects);
-        $mergeRequestApprovals = $this->getMergeRequestApprovals($mergeRequests);
-
-        usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
-            if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
-                return 0;
-            }
-            return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
-        });
+        $mergeRequestApprovals = $this->mergeRequestApprovalService->getByMergeRequests(
+            $mergeRequests,
+            $this->mergeRequestApprovalFilter
+        );
 
         $messageText = sprintf(
             '%u Pending merge requests for projects %s:',

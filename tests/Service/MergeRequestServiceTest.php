@@ -2,9 +2,7 @@
 
 namespace DanielPieper\MergeReminder\Tests\Service;
 
-use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
-use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Tests\TestCase;

@@ -3,6 +3,7 @@
 namespace DanielPieper\MergeReminder\Service;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
+use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\User;
@@ -48,6 +49,57 @@ class MergeRequestApprovalService
             throw new MergeRequestApprovalNotFoundException();
         }
         return $mergeRequestApproval;
+    }
+
+    /**
+     * @param array $mergeRequests
+     * @param MergeRequestApprovalFilter $filter
+     * @return array
+     * @throws MergeRequestApprovalNotFoundException
+     */
+    public function findByMergeRequests(
+        array $mergeRequests,
+        MergeRequestApprovalFilter $filter
+    ): array {
+        $mergeRequestApprovals = [];
+        foreach ($mergeRequests as $mergeRequest) {
+            $mergeRequestApprovals[] = $this->get($mergeRequest);
+        }
+        $mergeRequestApprovals = array_filter($mergeRequestApprovals, $filter);
+        $this->sortByCreatedAt($mergeRequestApprovals);
+
+        return $mergeRequestApprovals;
+    }
+
+    /**
+     * @param array $mergeRequests
+     * @param MergeRequestApprovalFilter $filter
+     * @return array
+     * @throws MergeRequestApprovalNotFoundException
+     */
+    public function getByMergeRequests(
+        array $mergeRequests,
+        MergeRequestApprovalFilter $filter
+    ): array {
+        $mergeRequestApprovals = $this->findByMergeRequests($mergeRequests, $filter);
+
+        if (count($mergeRequestApprovals) == 0) {
+            throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
+        }
+        return $mergeRequestApprovals;
+    }
+
+    /**
+     * @param array $mergeRequestApprovals
+     */
+    private function sortByCreatedAt(array &$mergeRequestApprovals): void
+    {
+        usort($mergeRequestApprovals, function (MergeRequestApproval $approvalA, MergeRequestApproval $approvalB) {
+            if ($approvalA->getCreatedAt()->equalTo($approvalB->getCreatedAt())) {
+                return 0;
+            }
+            return ($approvalA->getCreatedAt()->lessThan($approvalB->getCreatedAt()) ? -1 : 1);
+        });
     }
 
     /**

@@ -5,6 +5,7 @@ namespace DanielPieper\MergeReminder\ServiceProvider;
 use DanielPieper\MergeReminder\Command\ApproverCommand;
 use DanielPieper\MergeReminder\Command\OverviewCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
+use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
@@ -25,6 +26,7 @@ class AppServiceProvider extends AbstractServiceProvider
         OverviewCommand::class,
         ProjectCommand::class,
         ApproverCommand::class,
+        MergeRequestApprovalFilter::class,
     ];
 
     /**
@@ -48,6 +50,8 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->share(UserService::class)
             ->addArgument(\Gitlab\Client::class);
 
+        $container->share(MergeRequestApprovalFilter::class);
+
         $container->share(OverviewCommand::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class);
@@ -55,11 +59,13 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->share(ProjectCommand::class)
             ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class);
+            ->addArgument(MergeRequestApprovalService::class)
+            ->addArgument(MergeRequestApprovalFilter::class);
 
         $container->share(ApproverCommand::class)
             ->addArgument(UserService::class)
             ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class);
+            ->addArgument(MergeRequestApprovalService::class)
+            ->addArgument(MergeRequestApprovalFilter::class);
     }
 }
