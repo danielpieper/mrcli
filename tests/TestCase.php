@@ -2,14 +2,13 @@
 
 namespace DanielPieper\MergeReminder\Tests;
 
+use DanielPieper\MergeReminder\ValueObject\Group;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\Project;
 use DanielPieper\MergeReminder\ValueObject\User;
 use Faker\Factory;
 use Faker\Generator;
-use Gitlab\Api\MergeRequests;
-use Gitlab\Client;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 class TestCase extends PHPUnitTestCase
@@ -25,85 +24,75 @@ class TestCase extends PHPUnitTestCase
         $this->faker = Factory::create('de_DE');
     }
 
-    protected function createGitlabProject(): array
+    protected function createGitlabProject(array $attributes = []): array
     {
-        return [
+        return array_merge([
             'id' => $this->faker->randomNumber(),
             'name' => $this->faker->domainName,
             'merge_requests_enabled' => true,
-        ];
+        ], $attributes);
     }
 
-    protected function createGitlabUser(): array
+    protected function createProject(array $attributes = [])
     {
-        return [
+        return Project::fromArray($this->createGitlabProject($attributes));
+    }
+
+    protected function createGitlabUser(array $attributes = []): array
+    {
+        return array_merge([
             'id' => $this->faker->randomNumber(),
             'username' => $this->faker->userName,
             'name' => $this->faker->firstName . ' ' . $this->faker->lastName,
             'state' => User::STATE_ACTIVE,
             'avatar_url' => $this->faker->imageUrl(),
             'web_url' => $this->faker->url(),
-        ];
+        ], $attributes);
     }
 
-    protected function createGitlabGroup(): array
+    protected function createUser(array $attributes = [])
     {
-        return [
+        return User::fromArray($this->createGitlabUser($attributes));
+    }
+
+    protected function createGitlabGroup(array $attributes = []): array
+    {
+        return array_merge([
             'id' => $this->faker->randomNumber(),
             'name' => $this->faker->firstName . ' ' . $this->faker->lastName,
             'avatar_url' => $this->faker->imageUrl(),
             'web_url' => $this->faker->url(),
-        ];
+        ], $attributes);
     }
 
-    protected function createGitlabMergeRequestApproval(
-        array $approvedBy = [],
-        array $approvers = [],
-        array $suggestedApprovers = [],
-        array $approverGroups = []
-    ): array {
-        $mapUser = function (array $user) {
-            return [
-                'user' => array_merge(
-                    $this->createGitlabUser(),
-                    $user
-                )
-            ];
-        };
-        $approvedBy = array_map($mapUser, $approvedBy);
-        $approvers = array_map($mapUser, $approvers);
-        $suggestedApprovers = array_map($mapUser, $suggestedApprovers);
-        $approverGroups = array_map(function (array $group) {
-            return [
-                'group' => array_merge(
-                    $this->createGitlabGroup(),
-                    $group
-                )
-            ];
-        }, $approverGroups);
+    protected function createGroup(array $attributes = [])
+    {
+        return Group::fromArray($this->createGitlabGroup($attributes));
+    }
 
-        return [
+    protected function createGitlabMergeRequestApproval(array $attributes = []): array
+    {
+        return array_merge([
             'merge_status' => MergeRequestApproval::MERGE_STATUS_CAN_BE_MERGED,
             'approvals_required' => $this->faker->numberBetween(1, 4),
             'approvals_left' => $this->faker->numberBetween(1, 3),
-            'approved_by' => $approvedBy,
-            'approver_groups' => $approverGroups,
-            'approvers' => $approvers,
-            'suggested_approvers' => $suggestedApprovers,
             'updated_at' => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
             'created_at' => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
-        ];
+            'approved_by' => [],
+            'approver_groups' => [],
+            'approvers' => [],
+            'suggested_approvers' => [],
+        ], $attributes);
     }
 
-    protected function createGitlabMergeRequest(
-        array $project = [],
-        array $author = [],
-        array $assignee = []
-    ): array {
-        $project = Project::fromArray(array_merge($this->createGitlabProject(), $project));
-        $author = User::fromArray(array_merge($this->createGitlabUser(), $author));
-        $assignee = User::fromArray(array_merge($this->createGitlabUser(), $assignee));
-        return [
+    protected function createMergeRequestApproval(array $attributes = [])
+    {
+        return MergeRequestApproval::fromArray($this->createGitlabMergeRequestApproval($attributes));
+    }
+
+    protected function createGitlabMergeRequest(array $attributes = []): array
+    {
+        return array_merge([
             'id' => $this->faker->randomNumber(),
             'iid' => $this->faker->randomNumber(),
             'title' => $this->faker->sentence(6),
@@ -111,9 +100,14 @@ class TestCase extends PHPUnitTestCase
             'state' => MergeRequest::STATE_OPENED,
             'web_url' => $this->faker->url,
             'work_in_progress' => false,
-            'project' => $project,
-            'author' => $author,
-            'assignee' => $assignee,
-        ];
+            'project' => null,
+            'author' => null,
+            'assignee' => null,
+        ], $attributes);
+    }
+
+    protected function createMergeRequest(array $attributes = [])
+    {
+        return MergeRequest::fromArray($this->createGitlabMergeRequest($attributes));
     }
 }

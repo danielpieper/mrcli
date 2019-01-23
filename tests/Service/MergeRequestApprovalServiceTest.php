@@ -15,21 +15,27 @@ class MergeRequestApprovalServiceTest extends TestCase
 {
     public function testFindApproversDoNotContainApprovedBy()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
 
         $approvers = $expectedApprovers = [];
         for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
             $gitlabUser = $this->createGitlabUser();
-            $approvers[] = $gitlabUser;
+            $approvers[] = ['user' => $gitlabUser];
             $expectedApprovers[] = User::fromArray($gitlabUser);
         }
-        $approvedBy = [$this->createGitlabUser()];
+        $approvedBy = [
+            ['user' => $this->createGitlabUser()],
+        ];
         $approvers += $approvedBy;
 
-        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
-            $approvedBy,
-            $approvers
-        );
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval([
+            'approvers' => $approvers,
+            'approved_by' => $approvedBy,
+        ]);
 
         $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
         $service = new MergeRequestApprovalService($gitlabClientMock);
@@ -40,25 +46,28 @@ class MergeRequestApprovalServiceTest extends TestCase
 
     public function testFindSuggestedApproversDoNotContainApprovers()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
 
         $suggestedApprovers = $expectedSuggestedApprovers = [];
         for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
             $gitlabUser = $this->createGitlabUser();
-            $suggestedApprovers[] = $gitlabUser;
+            $suggestedApprovers[] = ['user' => $gitlabUser];
             $expectedSuggestedApprovers[] = User::fromArray($gitlabUser);
         }
         $approvers = [];
         for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
-            $approvers[] = $this->createGitlabUser();
+            $approvers[] = ['user' => $this->createGitlabUser()];
         }
         $suggestedApprovers += $approvers;
 
-        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
-            [],
-            $approvers,
-            $suggestedApprovers
-        );
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval([
+            'approvers' => $approvers,
+            'suggested_approvers' => $suggestedApprovers,
+        ]);
 
         $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
         $service = new MergeRequestApprovalService($gitlabClientMock);
@@ -69,21 +78,22 @@ class MergeRequestApprovalServiceTest extends TestCase
 
     public function testFindReturnsApproverGroups()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
 
         $approverGroups = $expectedApproverGroups = [];
         for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
             $gitlabGroup = $this->createGitlabGroup();
-            $approverGroups[] = $gitlabGroup;
+            $approverGroups[] = ['group' => $gitlabGroup];
             $expectedApproverGroups[] = Group::fromArray($gitlabGroup);
         }
 
-        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval(
-            [],
-            [],
-            [],
-            $approverGroups
-        );
+        $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval([
+            'approver_groups' => $approverGroups,
+        ]);
 
         $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
         $service = new MergeRequestApprovalService($gitlabClientMock);
@@ -94,7 +104,11 @@ class MergeRequestApprovalServiceTest extends TestCase
 
     public function testGetReturnsMergeRequest()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
         $gitlabMergeRequestApproval = $this->createGitlabMergeRequestApproval();
 
         $gitlabClientMock = $this->createGitlabClientMock($mergeRequest, $gitlabMergeRequestApproval);
@@ -107,7 +121,11 @@ class MergeRequestApprovalServiceTest extends TestCase
 
     public function testGetThrowsException()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
 
         $service = $this->createPartialMock(MergeRequestApprovalService::class, ['find']);
         $service->expects($this->once())
@@ -122,7 +140,11 @@ class MergeRequestApprovalServiceTest extends TestCase
 
     public function testFindReturnsNull()
     {
-        $mergeRequest = MergeRequest::fromArray($this->createGitlabMergeRequest());
+        $mergeRequest = $this->createMergeRequest([
+            'project' => $this->createProject(),
+            'author' => $this->createUser(),
+            'assignee' => $this->createUser(),
+        ]);
 
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
