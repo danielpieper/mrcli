@@ -1,7 +1,12 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-require __DIR__.'/../vendor/autoload.php';
+foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
 
 use DanielPieper\MergeReminder\Command\ApproverCommand;
 use DanielPieper\MergeReminder\Command\OverviewCommand;
