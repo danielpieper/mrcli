@@ -86,6 +86,7 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     /**
      * @return array
      * @throws MergeRequestNotFoundException
+     * @throws \Exception
      */
     private function getMergeRequests(): array
     {
@@ -106,7 +107,7 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     {
         $user = $this->getUser(/** @scrutinizer ignore-type */ $input->getArgument('username'));
         $mergeRequests = $this->getMergeRequests();
-        $mergeRequestApprovals = $this->mergeRequestApprovalService->getByMergeRequests(
+        $mergeRequestApprovals = $this->mergeRequestApprovalService->getAll(
             $mergeRequests,
             $this->mergeRequestApprovalFilter->addUser($user, $input->getOption('include-suggested'))
         );

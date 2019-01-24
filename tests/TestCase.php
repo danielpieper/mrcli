@@ -24,6 +24,20 @@ class TestCase extends PHPUnitTestCase
         $this->faker = Factory::create('de_DE');
     }
 
+    /**
+     * @param $object
+     * @param $methodName
+     * @return \ReflectionMethod
+     * @throws \ReflectionException
+     */
+    public function getMethod(&$object, $methodName): \ReflectionMethod
+    {
+        $reflection = new \ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+        return $method;
+    }
+
     protected function createGitlabProject(array $attributes = []): array
     {
         return array_merge([

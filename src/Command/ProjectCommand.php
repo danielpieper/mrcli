@@ -108,7 +108,7 @@ class ProjectCommand extends BaseCommand implements SlackServiceAwareInterface
         $projectNames = $input->getArgument('names');
         $projects = $this->getProjects(/** @scrutinizer ignore-type */ $projectNames);
         $mergeRequests = $this->getMergeRequests($projects);
-        $mergeRequestApprovals = $this->mergeRequestApprovalService->getByMergeRequests(
+        $mergeRequestApprovals = $this->mergeRequestApprovalService->getAll(
             $mergeRequests,
             $this->mergeRequestApprovalFilter
         );
