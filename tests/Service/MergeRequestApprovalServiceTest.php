@@ -3,6 +3,7 @@
 namespace DanielPieper\MergeReminder\Tests\Service;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
+use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Tests\TestCase;
 use DanielPieper\MergeReminder\ValueObject\Group;
@@ -165,13 +166,83 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertNull($actual);
     }
 
+    public function testGetAllSortByCreatedAt()
+    {
+        $mergeRequestApprovals = $expectedMergeRequestApprovals = $mergeRequests = [];
+        $date = $this->faker->dateTimeThisDecade();
+        for ($i = 0; $i < $this->faker->numberBetween(5, 10); $i++) {
+            $mergeRequest = $this->createMergeRequest([
+                'project' => $this->createProject(),
+                'author' => $this->createUser(),
+                'assignee' => $this->createUser(),
+            ]);
+            $mergeRequests[] = $mergeRequest;
+            $expectedMergeRequestApprovals[] = $mergeRequestApprovals[] = $this->createMergeRequestApproval([
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'merge_request' => $mergeRequest,
+            ]);
+            $date->add(new \DateInterval('P' . $this->faker->numberBetween(1, 10) . 'D'));
+        }
+        shuffle($mergeRequestApprovals);
+
+        $filter = $this->createMock(MergeRequestApprovalFilter::class);
+        $filter
+            ->expects($this->any())
+            ->method('__invoke')
+            ->with($this->anything())
+            ->willReturn(true);
+
+        $service = $this->createPartialMock(MergeRequestApprovalService::class, ['find']);
+        $service
+            ->expects($this->exactly(count($mergeRequests)))
+            ->method('find')
+            ->withConsecutive(...$mergeRequests)
+            ->willReturnOnConsecutiveCalls(...$mergeRequestApprovals);
+
+        $actualMergeRequestApprovals = $service->getAll($mergeRequests, $filter);
+
+        $this->assertEquals($expectedMergeRequestApprovals, $actualMergeRequestApprovals);
+    }
+
+    public function testGetAllThrowsException()
+    {
+        $mergeRequests = [
+             $this->createMergeRequest([
+                'project' => $this->createProject(),
+                'author' => $this->createUser(),
+                'assignee' => $this->createUser(),
+             ]),
+            $this->createMergeRequest([
+                'project' => $this->createProject(),
+                'author' => $this->createUser(),
+                'assignee' => $this->createUser(),
+            ])
+        ];
+
+        $service = $this->createPartialMock(MergeRequestApprovalService::class, ['find']);
+        $service->expects($this->exactly(2))
+            ->method('find')
+            ->withConsecutive(...$mergeRequests)
+            ->willReturn(null);
+
+        $filter = $this->createMock(MergeRequestApprovalFilter::class);
+        $filter
+            ->expects($this->any())
+            ->method('__invoke')
+            ->with($this->anything())
+            ->willReturn(true);
+
+        $this->expectException(MergeRequestApprovalNotFoundException::class);
+        $service->getAll($mergeRequests, $filter);
+    }
+
     private function createGitlabClientMock(MergeRequest $mergeRequest, array $gitlabMergeRequestApproval)
     {
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
             ->expects($this->once())
             ->method('approvals')
-            ->with($this->equalTo($mergeRequest->getProject()->getId(), $mergeRequest->getId()))
+            ->with($mergeRequest->getProject()->getId(), $mergeRequest->getIid())
             ->willReturn($gitlabMergeRequestApproval);
 
         $gitlabClientMock = $this->createMock(Client::class);

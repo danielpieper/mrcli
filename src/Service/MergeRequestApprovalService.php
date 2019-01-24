@@ -55,15 +55,18 @@ class MergeRequestApprovalService
      * @param array $mergeRequests
      * @param MergeRequestApprovalFilter $filter
      * @return array
-     * @throws MergeRequestApprovalNotFoundException
+     * @throws \Exception
      */
-    public function findByMergeRequests(
+    public function all(
         array $mergeRequests,
         MergeRequestApprovalFilter $filter
     ): array {
         $mergeRequestApprovals = [];
         foreach ($mergeRequests as $mergeRequest) {
-            $mergeRequestApprovals[] = $this->get($mergeRequest);
+            $approval = $this->find($mergeRequest);
+            if ($approval) {
+                $mergeRequestApprovals[] = $approval;
+            }
         }
         $mergeRequestApprovals = array_filter($mergeRequestApprovals, $filter);
         $this->sortByCreatedAt($mergeRequestApprovals);
@@ -76,12 +79,13 @@ class MergeRequestApprovalService
      * @param MergeRequestApprovalFilter $filter
      * @return array
      * @throws MergeRequestApprovalNotFoundException
+     * @throws \Exception
      */
-    public function getByMergeRequests(
+    public function getAll(
         array $mergeRequests,
         MergeRequestApprovalFilter $filter
     ): array {
-        $mergeRequestApprovals = $this->findByMergeRequests($mergeRequests, $filter);
+        $mergeRequestApprovals = $this->all($mergeRequests, $filter);
 
         if (count($mergeRequestApprovals) == 0) {
             throw new MergeRequestApprovalNotFoundException('No pending merge request approvals.');
