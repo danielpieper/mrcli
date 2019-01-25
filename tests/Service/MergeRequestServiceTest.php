@@ -35,7 +35,7 @@ class MergeRequestServiceTest extends TestCase
         $gitlabMergeRequestsMock
             ->expects($this->once())
             ->method('show')
-            ->with($this->equalTo($expectedMergeRequest->getProject()->getId(), $expectedMergeRequest->getId()))
+            ->with($expectedMergeRequest->getProject()->getId(), $expectedMergeRequest->getId())
             ->willReturn($gitlabMergeRequest);
         $gitlabClientMock = $this->createMock(Client::class);
         $gitlabClientMock
@@ -48,7 +48,6 @@ class MergeRequestServiceTest extends TestCase
 
         $this->assertEquals($expectedMergeRequest, $actual);
     }
-
 
     public function testGetByProjectThrowsException()
     {
@@ -63,5 +62,28 @@ class MergeRequestServiceTest extends TestCase
 
         $this->expectException(MergeRequestNotFoundException::class);
         $service->getByProject($project, $id);
+    }
+
+    public function testFindByProjectReturnsNull()
+    {
+        $project = $this->createProject();
+        $id = $this->faker->randomNumber();
+
+        $projectServiceMock = $this->createMock(ProjectService::class);
+        $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
+        $gitlabMergeRequestsMock
+            ->expects($this->once())
+            ->method('show')
+            ->with($project->getId(), $id)
+            ->willReturn(null);
+        $gitlabClientMock = $this->createMock(Client::class);
+        $gitlabClientMock
+            ->expects($this->once())
+            ->method('mergeRequests')
+            ->willReturn($gitlabMergeRequestsMock);
+
+        $service = new MergeRequestService($gitlabClientMock, $projectServiceMock);
+        $actual = $service->findByProject($project, $id);
+        $this->assertNull($actual);
     }
 }
