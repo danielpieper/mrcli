@@ -12,9 +12,13 @@ class ProjectService
     /** @var \Gitlab\Client */
     private $gitlabClient;
 
-    public function __construct(\Gitlab\Client $gitlabClient)
+    /** @var ResultPager */
+    private $resultPager;
+
+    public function __construct(\Gitlab\Client $gitlabClient, ResultPager $resultPager)
     {
         $this->gitlabClient = $gitlabClient;
+        $this->resultPager = $resultPager;
     }
 
     /**
@@ -61,8 +65,7 @@ class ProjectService
      */
     public function all(): array
     {
-        $pager = new ResultPager($this->gitlabClient);
-        $projects = $pager->fetchAll(
+        $projects = $this->resultPager->fetchAll(
             $this->gitlabClient->projects(),
             'all',
             [

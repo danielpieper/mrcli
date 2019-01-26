@@ -131,7 +131,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $service = $this->createPartialMock(MergeRequestApprovalService::class, ['find']);
         $service->expects($this->once())
             ->method('find')
-            ->with($this->equalTo($mergeRequest))
+            ->with($mergeRequest)
             ->willReturn(null);
 
         $this->expectException(MergeRequestApprovalNotFoundException::class);
@@ -151,7 +151,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $gitlabMergeRequestsMock
             ->expects($this->once())
             ->method('approvals')
-            ->with($this->equalTo($mergeRequest->getProject()->getId(), $mergeRequest->getId()))
+            ->with($mergeRequest->getProject()->getId(), $mergeRequest->getIid())
             ->willReturn(null);
 
         $gitlabClientMock = $this->createMock(Client::class);
