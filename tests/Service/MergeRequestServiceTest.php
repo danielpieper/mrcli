@@ -10,6 +10,7 @@ use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\User;
 use Gitlab\Api\MergeRequests;
 use Gitlab\Client;
+use Gitlab\ResultPager;
 
 class MergeRequestServiceTest extends TestCase
 {
@@ -31,6 +32,7 @@ class MergeRequestServiceTest extends TestCase
         ));
 
         $projectServiceMock = $this->createMock(ProjectService::class);
+        $resultPagerMock = $this->createMock(ResultPager::class);
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
             ->expects($this->once())
@@ -43,7 +45,7 @@ class MergeRequestServiceTest extends TestCase
             ->method('mergeRequests')
             ->willReturn($gitlabMergeRequestsMock);
 
-        $service = new MergeRequestService($gitlabClientMock, $projectServiceMock);
+        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock, $projectServiceMock);
         $actual = $service->getByProject($expectedMergeRequest->getProject(), $expectedMergeRequest->getId());
 
         $this->assertEquals($expectedMergeRequest, $actual);
@@ -70,6 +72,7 @@ class MergeRequestServiceTest extends TestCase
         $id = $this->faker->randomNumber();
 
         $projectServiceMock = $this->createMock(ProjectService::class);
+        $resultPagerMock = $this->createMock(ResultPager::class);
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
             ->expects($this->once())
@@ -82,8 +85,48 @@ class MergeRequestServiceTest extends TestCase
             ->method('mergeRequests')
             ->willReturn($gitlabMergeRequestsMock);
 
-        $service = new MergeRequestService($gitlabClientMock, $projectServiceMock);
+        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock, $projectServiceMock);
         $actual = $service->findByProject($project, $id);
         $this->assertNull($actual);
+    }
+
+    public function testAllByProject()
+    {
+        $gitlabMergeRequests = $mergeRequests = [];
+
+        $project = $this->createProject();
+        for ($y =0; $y < $this->faker->numberBetween(5, 20); $y++) {
+            $author = $this->createGitlabUser();
+            $assignee = $this->createGitlabUser();
+            $gitlabMergeRequest = $this->createGitlabMergeRequest([
+                'project' => $project,
+                'author' => $author,
+                'assignee' => $assignee,
+            ]);
+            $gitlabMergeRequests[] = $gitlabMergeRequest;
+            $mergeRequests[] = MergeRequest::fromArray(array_merge($gitlabMergeRequest, [
+                'author' => User::fromArray($author),
+                'assignee' => User::fromArray($assignee),
+            ]));
+        }
+
+        $resultPagerMock = $this->createMock(ResultPager::class);
+        $resultPagerMock
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->withAnyParameters()
+            ->willReturn($gitlabMergeRequests);
+
+        $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
+        $gitlabClientMock = $this->createMock(Client::class);
+        $gitlabClientMock
+            ->expects($this->once())
+            ->method('mergeRequests')
+            ->willReturn($gitlabMergeRequestsMock);
+
+        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock);
+        $actual = $service->allByProject($project);
+
+        $this->assertEquals($mergeRequests, $actual);
     }
 }

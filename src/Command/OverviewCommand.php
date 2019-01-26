@@ -5,7 +5,7 @@ namespace DanielPieper\MergeReminder\Command;
 use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
-use DanielPieper\MergeReminder\ValueObject\MergeRequest;
+use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class OverviewCommand extends BaseCommand
 {
+    /** @var ProjectService */
+    private $projectService;
+
     /** @var MergeRequestService */
     private $mergeRequestService;
 
@@ -20,9 +23,11 @@ class OverviewCommand extends BaseCommand
     private $mergeRequestApprovalService;
 
     public function __construct(
+        ProjectService $projectService,
         MergeRequestService $mergeRequestService,
         MergeRequestApprovalService $mergeRequestApprovalService
     ) {
+        $this->projectService = $projectService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
         parent::__construct();
@@ -65,8 +70,10 @@ class OverviewCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var MergeRequest[] $mergeRequests */
-        $mergeRequests = $this->mergeRequestService->all();
+        $mergeRequests = [];
+        foreach ($this->projectService->all() as $project) {
+            $mergeRequests += $this->mergeRequestService->allByProject($project);
+        }
         if (count($mergeRequests) == 0) {
             $output->writeln('No pending merge requests.');
             return;

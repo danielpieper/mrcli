@@ -2,16 +2,15 @@
 
 namespace DanielPieper\MergeReminder\Command;
 
-use DanielPieper\MergeReminder\Exception\MergeRequestApprovalNotFoundException;
 use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
 use DanielPieper\MergeReminder\Exception\UserNotFoundException;
 use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
+use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\UserService;
 use DanielPieper\MergeReminder\SlackServiceAwareInterface;
 use DanielPieper\MergeReminder\SlackServiceAwareTrait;
-use DanielPieper\MergeReminder\ValueObject\MergeRequestApproval;
 use DanielPieper\MergeReminder\ValueObject\User;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
 {
     use SlackServiceAwareTrait;
+
+    /** @var ProjectService */
+    private $projectService;
 
     /** @var UserService */
     private $userService;
@@ -35,11 +37,13 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
     private $mergeRequestApprovalFilter;
 
     public function __construct(
+        ProjectService $projectService,
         UserService $userService,
         MergeRequestService $mergeRequestService,
         MergeRequestApprovalService $mergeRequestApprovalService,
         MergeRequestApprovalFilter $mergeRequestApprovalFilter
     ) {
+        $this->projectService = $projectService;
         $this->userService = $userService;
         $this->mergeRequestService = $mergeRequestService;
         $this->mergeRequestApprovalService = $mergeRequestApprovalService;
@@ -90,7 +94,10 @@ class ApproverCommand extends BaseCommand implements SlackServiceAwareInterface
      */
     private function getMergeRequests(): array
     {
-        $mergeRequests = $this->mergeRequestService->all();
+        $mergeRequests = [];
+        foreach ($this->projectService->all() as $project) {
+            $mergeRequests += $this->mergeRequestService->allByProject($project);
+        }
         if (count($mergeRequests) == 0) {
             throw new MergeRequestNotFoundException('No pending merge requests.');
         }

@@ -14,13 +14,13 @@ class MergeRequestService
     /** @var \Gitlab\Client */
     private $gitlabClient;
 
-    /** @var ProjectService */
-    private $projectService;
+    /** @var ResultPager */
+    private $resultPager;
 
-    public function __construct(\Gitlab\Client $gitlabClient, ProjectService $projectService)
+    public function __construct(\Gitlab\Client $gitlabClient, ResultPager $resultPager)
     {
         $this->gitlabClient = $gitlabClient;
-        $this->projectService = $projectService;
+        $this->resultPager = $resultPager;
     }
 
     /**
@@ -53,42 +53,6 @@ class MergeRequestService
     }
 
     /**
-     * @param Carbon|null $createdAfter
-     * @return MergeRequest[]
-     * @throws \Exception
-     */
-    public function all(?Carbon $createdAfter = null): array
-    {
-        if (!$createdAfter) {
-            $createdAfter = new Carbon('1 month ago');
-        }
-
-        $mergeRequests = [];
-        foreach ($this->projectService->all() as $project) {
-            $pager = new ResultPager($this->gitlabClient);
-            $projectMergeRequests = $pager->fetchAll(
-                $this->gitlabClient->mergeRequests(),
-                'all',
-                [
-                    $project->getId(),
-                    [
-                        'page' => 1,
-                        'per_page' => 100,
-                        'state' => 'opened',
-                        'scope' => 'all',
-                        'created_after' => $createdAfter,
-                    ]
-                ]
-            );
-            foreach ($projectMergeRequests as $projectMergeRequest) {
-                $mergeRequests[] = $this->transform($project, $projectMergeRequest);
-            }
-        }
-
-        return $mergeRequests;
-    }
-
-    /**
      * @param Project $project
      * @param Carbon|null $createdAfter
      * @return MergeRequest[]
@@ -106,8 +70,7 @@ class MergeRequestService
             'state' => 'opened',
             'created_after' => $createdAfter,
         ];
-        $pager = new ResultPager($this->gitlabClient);
-        $mergeRequests = $pager->fetchAll(
+        $mergeRequests = $this->resultPager->fetchAll(
             $this->gitlabClient->mergeRequests(),
             'all',
             [

@@ -45,7 +45,7 @@ class AppServiceProvider extends AbstractServiceProvider
 
         $container->share(MergeRequestService::class)
             ->addArgument(\Gitlab\Client::class)
-            ->addArgument(ProjectService::class);
+            ->addArgument(\GitLab\ResultPager::class);
 
         $container->share(UserService::class)
             ->addArgument(\Gitlab\Client::class);
@@ -53,6 +53,7 @@ class AppServiceProvider extends AbstractServiceProvider
         $container->share(MergeRequestApprovalFilter::class);
 
         $container->share(OverviewCommand::class)
+            ->addArgument(ProjectService::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class);
 
@@ -63,6 +64,7 @@ class AppServiceProvider extends AbstractServiceProvider
             ->addArgument(MergeRequestApprovalFilter::class);
 
         $container->share(ApproverCommand::class)
+            ->addArgument(ProjectService::class)
             ->addArgument(UserService::class)
             ->addArgument(MergeRequestService::class)
             ->addArgument(MergeRequestApprovalService::class)
