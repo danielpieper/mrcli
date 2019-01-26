@@ -13,7 +13,7 @@ use Gitlab\ResultPager;
 
 class ProjectServiceTest extends TestCase
 {
-    public function testGetReturnsProject()
+    public function testGetReturnsProject(): void
     {
         $project = $this->createGitlabProject();
         $expectedProject = Project::fromArray($project);
@@ -39,7 +39,7 @@ class ProjectServiceTest extends TestCase
         $this->assertEquals($expectedProject, $actual);
     }
 
-    public function testGetThrowsException()
+    public function testGetThrowsException(): void
     {
         $id = $this->faker->randomNumber();
 
@@ -64,7 +64,7 @@ class ProjectServiceTest extends TestCase
         $service->get($id);
     }
 
-    public function testAllByUserReturnsEmptyResult()
+    public function testAllByUserReturnsEmptyResult(): void
     {
         $user = $this->createUser();
 
@@ -89,7 +89,7 @@ class ProjectServiceTest extends TestCase
         $this->assertEquals([], $actual);
     }
 
-    public function testAllByUserReturnsProjects()
+    public function testAllByUserReturnsProjects(): void
     {
         $user = $this->createUser();
         $projects = $expected = [];
@@ -120,7 +120,7 @@ class ProjectServiceTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testAllReturnsProjects()
+    public function testAllReturnsProjects(): void
     {
         $projects = $expected = [];
         for ($i = 0; $i < $this->faker->numberBetween(2, 5); $i++) {

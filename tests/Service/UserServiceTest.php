@@ -11,7 +11,7 @@ use Gitlab\Client;
 
 class UserServiceTest extends TestCase
 {
-    public function testGetReturnsUser()
+    public function testGetReturnsUser(): void
     {
         $user = $this->createGitlabUser();
         $expectedUser = User::fromArray($user);
@@ -35,7 +35,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($expectedUser, $actual);
     }
 
-    public function testGetThrowsException()
+    public function testGetThrowsException(): void
     {
         $id = $this->faker->randomNumber();
 
@@ -58,7 +58,7 @@ class UserServiceTest extends TestCase
         $service->get($id);
     }
 
-    public function testGetByNameReturnsUser()
+    public function testGetByNameReturnsUser(): void
     {
         $user = $this->createGitlabUser();
         $expectedUser = User::fromArray($user);
@@ -86,7 +86,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($expectedUser, $actual);
     }
 
-    public function testGetByNameThrowsException()
+    public function testGetByNameThrowsException(): void
     {
         $username = $this->faker->userName();
 
@@ -113,7 +113,7 @@ class UserServiceTest extends TestCase
         $service->getByName($username);
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $users = $expectedUsers = [];
         for ($i = 0; $i < $this->faker->numberBetween(2, 4); $i++) {
@@ -141,7 +141,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($expectedUsers, $actual);
     }
 
-    public function testGetAllReturnsEmpty()
+    public function testGetAllReturnsEmpty(): void
     {
         $gitLabUsersMock = $this->createMock(Users::class);
         $gitLabUsersMock
@@ -162,7 +162,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals([], $actual);
     }
 
-    public function testGetAuthenticated()
+    public function testGetAuthenticated(): void
     {
         $user = $this->createGitlabUser();
         $expectedUser = User::fromArray($user);
@@ -185,7 +185,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($expectedUser, $actual);
     }
 
-    public function testGetAuthenticatedThrowsException()
+    public function testGetAuthenticatedThrowsException(): void
     {
         $gitLabUsersMock = $this->createMock(Users::class);
         $gitLabUsersMock

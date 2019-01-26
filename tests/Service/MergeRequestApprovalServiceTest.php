@@ -11,10 +11,11 @@ use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\User;
 use Gitlab\Api\MergeRequests;
 use Gitlab\Client;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class MergeRequestApprovalServiceTest extends TestCase
 {
-    public function testFindApproversDoNotContainApprovedBy()
+    public function testFindApproversDoNotContainApprovedBy(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -45,7 +46,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertEquals($expectedApprovers, $actual->getApprovers());
     }
 
-    public function testFindSuggestedApproversDoNotContainApprovers()
+    public function testFindSuggestedApproversDoNotContainApprovers(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -77,7 +78,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertEquals($expectedSuggestedApprovers, $actual->getSuggestedApprovers());
     }
 
-    public function testFindReturnsApproverGroups()
+    public function testFindReturnsApproverGroups(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -103,7 +104,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertEquals($expectedApproverGroups, $actual->getApproverGroups());
     }
 
-    public function testGetReturnsMergeRequest()
+    public function testGetReturnsMergeRequest(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -120,7 +121,7 @@ class MergeRequestApprovalServiceTest extends TestCase
     }
 
 
-    public function testGetThrowsException()
+    public function testGetThrowsException(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -139,7 +140,7 @@ class MergeRequestApprovalServiceTest extends TestCase
     }
 
 
-    public function testFindReturnsNull()
+    public function testFindReturnsNull(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -166,7 +167,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertNull($actual);
     }
 
-    public function testGetAllSortByCreatedAt()
+    public function testGetAllSortByCreatedAt(): void
     {
         $mergeRequestApprovals = $expectedMergeRequestApprovals = $mergeRequests = [];
         $date = $this->faker->dateTimeThisDecade();
@@ -204,7 +205,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $this->assertEquals($expectedMergeRequestApprovals, $actualMergeRequestApprovals);
     }
 
-    public function testGetAllThrowsException()
+    public function testGetAllThrowsException(): void
     {
         $mergeRequests = [
              $this->createMergeRequest([
@@ -236,7 +237,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         $service->getAll($mergeRequests, $filter);
     }
 
-    private function createGitlabClientMock(MergeRequest $mergeRequest, array $gitlabMergeRequestApproval)
+    private function createGitlabClientMock(MergeRequest $mergeRequest, array $gitlabMergeRequestApproval): MockObject
     {
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock

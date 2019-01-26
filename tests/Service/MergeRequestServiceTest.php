@@ -13,7 +13,7 @@ use Gitlab\ResultPager;
 
 class MergeRequestServiceTest extends TestCase
 {
-    public function testGetByProjectReturnsMergeRequest()
+    public function testGetByProjectReturnsMergeRequest(): void
     {
         $author = $this->createGitlabUser();
         $assignee = $this->createGitlabUser();
@@ -49,7 +49,7 @@ class MergeRequestServiceTest extends TestCase
         $this->assertEquals($expectedMergeRequest, $actual);
     }
 
-    public function testGetByProjectThrowsException()
+    public function testGetByProjectThrowsException(): void
     {
         $project = $this->createProject();
         $id = $this->faker->randomNumber();
@@ -64,7 +64,7 @@ class MergeRequestServiceTest extends TestCase
         $service->getByProject($project, $id);
     }
 
-    public function testFindByProjectReturnsNull()
+    public function testFindByProjectReturnsNull(): void
     {
         $project = $this->createProject();
         $id = $this->faker->randomNumber();
@@ -87,7 +87,7 @@ class MergeRequestServiceTest extends TestCase
         $this->assertNull($actual);
     }
 
-    public function testAllByProjectReturnsMergeRequests()
+    public function testAllByProjectReturnsMergeRequests(): void
     {
         $gitlabMergeRequests = $mergeRequests = [];
 

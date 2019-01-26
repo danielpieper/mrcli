@@ -11,7 +11,7 @@ use Razorpay\Slack\Message;
 
 class SlackServiceTest extends TestCase
 {
-    public function testPostMessage()
+    public function testPostMessage(): void
     {
         $mergeRequestsApprovals = [];
         for ($i = 0; $i < $this->faker->numberBetween(2, 5); $i++) {
@@ -39,7 +39,7 @@ class SlackServiceTest extends TestCase
         $service = new SlackService($slackClient);
         $service->postMessage($mergeRequestsApprovals);
     }
-    public function testGetAttachmentReturnsAttachment()
+    public function testGetAttachmentReturnsAttachment(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -81,7 +81,7 @@ class SlackServiceTest extends TestCase
      * @param $expected
      * @throws \ReflectionException
      */
-    public function testGetColor($days, $expected)
+    public function testGetColor($days, $expected): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),
@@ -101,7 +101,7 @@ class SlackServiceTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function getColorProvider()
+    public function getColorProvider(): array
     {
         return [
             'good' => [1, 'good'],
@@ -110,7 +110,7 @@ class SlackServiceTest extends TestCase
         ];
     }
 
-    public function testGetFields()
+    public function testGetFields(): void
     {
         $mergeRequest = $this->createMergeRequest([
             'project' => $this->createProject(),

@@ -35,7 +35,7 @@ class MergeRequestApprovalFilter
      */
     public function addUser(User $user, bool $includeSuggestedApprovers = false): MergeRequestApprovalFilter
     {
-        return new self($user, $includeSuggestedApprovers);
+        return new static($user, $includeSuggestedApprovers);
     }
 
     /**
@@ -44,7 +44,7 @@ class MergeRequestApprovalFilter
      */
     public function addIncludeSuggestedApprovers(bool $includeSuggestedApprovers): MergeRequestApprovalFilter
     {
-        return new self($this->user, $includeSuggestedApprovers);
+        return new static($this->user, $includeSuggestedApprovers);
     }
 
     /**
@@ -105,6 +105,6 @@ class MergeRequestApprovalFilter
         if (!$this->user) {
             return false;
         }
-        return $mergeRequestApproval->getMergeRequest()->getAssignee() == $this->user->getUsername();
+        return $mergeRequestApproval->getMergeRequest()->getAssignee()->getUsername() == $this->user->getUsername();
     }
 }

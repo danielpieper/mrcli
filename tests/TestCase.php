@@ -38,6 +38,10 @@ class TestCase extends PHPUnitTestCase
         return $method;
     }
 
+    /**
+     * @param array $attributes
+     * @return array
+     */
     protected function createGitlabProject(array $attributes = []): array
     {
         return array_merge([
@@ -47,11 +51,19 @@ class TestCase extends PHPUnitTestCase
         ], $attributes);
     }
 
+    /**
+     * @param array $attributes
+     * @return Project
+     */
     protected function createProject(array $attributes = [])
     {
         return Project::fromArray($this->createGitlabProject($attributes));
     }
 
+    /**
+     * @param array $attributes
+     * @return array
+     */
     protected function createGitlabUser(array $attributes = []): array
     {
         return array_merge([
@@ -64,11 +76,19 @@ class TestCase extends PHPUnitTestCase
         ], $attributes);
     }
 
+    /**
+     * @param array $attributes
+     * @return User
+     */
     protected function createUser(array $attributes = [])
     {
         return User::fromArray($this->createGitlabUser($attributes));
     }
 
+    /**
+     * @param array $attributes
+     * @return array
+     */
     protected function createGitlabGroup(array $attributes = []): array
     {
         return array_merge([
@@ -79,11 +99,19 @@ class TestCase extends PHPUnitTestCase
         ], $attributes);
     }
 
+    /**
+     * @param array $attributes
+     * @return Group
+     */
     protected function createGroup(array $attributes = [])
     {
         return Group::fromArray($this->createGitlabGroup($attributes));
     }
 
+    /**
+     * @param array $attributes
+     * @return array
+     */
     protected function createGitlabMergeRequestApproval(array $attributes = []): array
     {
         return array_merge([
@@ -99,11 +127,20 @@ class TestCase extends PHPUnitTestCase
         ], $attributes);
     }
 
+    /**
+     * @param array $attributes
+     * @return MergeRequestApproval
+     * @throws \Exception
+     */
     protected function createMergeRequestApproval(array $attributes = [])
     {
         return MergeRequestApproval::fromArray($this->createGitlabMergeRequestApproval($attributes));
     }
 
+    /**
+     * @param array $attributes
+     * @return array
+     */
     protected function createGitlabMergeRequest(array $attributes = []): array
     {
         return array_merge([
@@ -120,6 +157,10 @@ class TestCase extends PHPUnitTestCase
         ], $attributes);
     }
 
+    /**
+     * @param array $attributes
+     * @return MergeRequest
+     */
     protected function createMergeRequest(array $attributes = [])
     {
         return MergeRequest::fromArray($this->createGitlabMergeRequest($attributes));
