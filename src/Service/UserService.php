@@ -34,12 +34,12 @@ class UserService
      */
     public function findByName(string $username): ?User
     {
-        $users = $this->gitlabClient->users()->all(['username' => $username]);
-        if (!is_array($users) || count($users) == 0) {
+        $users = $this->all($username);
+        if (count($users) == 0) {
             return null;
         }
 
-        return User::fromArray(array_shift($users));
+        return array_shift($users);
     }
 
     /**
