@@ -20,7 +20,7 @@ class SlackService
      * @param MergeRequestApproval[] $mergeRequestApprovals
      * @param string $messageText
      */
-    public function postMessage(array $mergeRequestApprovals, $messageText = 'Your pending merge requests')
+    public function postMessage(array $mergeRequestApprovals, $messageText = 'Your pending merge requests'): void
     {
         $message = $this->slackClient->createMessage();
         $message->setText($messageText);
@@ -37,7 +37,7 @@ class SlackService
      * @param MergeRequestApproval $mergeRequestApproval
      * @return Attachment
      */
-    private function getAttachment(MergeRequestApproval $mergeRequestApproval): Attachment
+    protected function getAttachment(MergeRequestApproval $mergeRequestApproval): Attachment
     {
         $mergeRequest = $mergeRequestApproval->getMergeRequest();
         $project = $mergeRequest->getProject();
@@ -59,7 +59,7 @@ class SlackService
         return $attachment;
     }
 
-    private function getFields(MergeRequestApproval $mergeRequestApproval): array
+    protected function getFields(MergeRequestApproval $mergeRequestApproval): array
     {
         $fields = [
             [
@@ -102,7 +102,7 @@ class SlackService
      * @param MergeRequestApproval $mergeRequestApproval
      * @return string
      */
-    private function getColor(MergeRequestApproval $mergeRequestApproval): string
+    protected function getColor(MergeRequestApproval $mergeRequestApproval): string
     {
         $ageInDays = $mergeRequestApproval->getCreatedAt()->diffInDays();
 
