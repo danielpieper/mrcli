@@ -4,7 +4,6 @@ namespace DanielPieper\MergeReminder\Tests\Service;
 
 use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
-use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Tests\TestCase;
 use DanielPieper\MergeReminder\ValueObject\MergeRequest;
 use DanielPieper\MergeReminder\ValueObject\User;
@@ -31,7 +30,6 @@ class MergeRequestServiceTest extends TestCase
             ]
         ));
 
-        $projectServiceMock = $this->createMock(ProjectService::class);
         $resultPagerMock = $this->createMock(ResultPager::class);
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
@@ -45,7 +43,7 @@ class MergeRequestServiceTest extends TestCase
             ->method('mergeRequests')
             ->willReturn($gitlabMergeRequestsMock);
 
-        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock, $projectServiceMock);
+        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock);
         $actual = $service->getByProject($expectedMergeRequest->getProject(), $expectedMergeRequest->getId());
 
         $this->assertEquals($expectedMergeRequest, $actual);
@@ -71,7 +69,6 @@ class MergeRequestServiceTest extends TestCase
         $project = $this->createProject();
         $id = $this->faker->randomNumber();
 
-        $projectServiceMock = $this->createMock(ProjectService::class);
         $resultPagerMock = $this->createMock(ResultPager::class);
         $gitlabMergeRequestsMock = $this->createMock(MergeRequests::class);
         $gitlabMergeRequestsMock
@@ -85,12 +82,12 @@ class MergeRequestServiceTest extends TestCase
             ->method('mergeRequests')
             ->willReturn($gitlabMergeRequestsMock);
 
-        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock, $projectServiceMock);
+        $service = new MergeRequestService($gitlabClientMock, $resultPagerMock);
         $actual = $service->findByProject($project, $id);
         $this->assertNull($actual);
     }
 
-    public function testAllByProject()
+    public function testAllByProjectReturnsMergeRequests()
     {
         $gitlabMergeRequests = $mergeRequests = [];
 
