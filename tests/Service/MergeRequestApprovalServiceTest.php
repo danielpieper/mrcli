@@ -23,7 +23,7 @@ class MergeRequestApprovalServiceTest extends TestCase
         ]);
 
         $approvers = $expectedApprovers = [];
-        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+        for ($i = 0; $i < $this->faker->numberBetween(2, 5); $i++) {
             $gitlabUser = $this->createGitlabUser();
             $approvers[] = ['user' => $gitlabUser];
             $expectedApprovers[] = User::fromArray($gitlabUser);
@@ -54,13 +54,13 @@ class MergeRequestApprovalServiceTest extends TestCase
         ]);
 
         $suggestedApprovers = $expectedSuggestedApprovers = [];
-        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+        for ($i = 0; $i < $this->faker->numberBetween(2, 5); $i++) {
             $gitlabUser = $this->createGitlabUser();
             $suggestedApprovers[] = ['user' => $gitlabUser];
             $expectedSuggestedApprovers[] = User::fromArray($gitlabUser);
         }
         $approvers = [];
-        for ($i = 0; $i < $this->faker->numberBetween(1, 3); $i++) {
+        for ($i = 0; $i < $this->faker->numberBetween(2, 5); $i++) {
             $approvers[] = ['user' => $this->createGitlabUser()];
         }
         $suggestedApprovers += $approvers;
