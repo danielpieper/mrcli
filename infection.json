@@ -6,6 +6,6 @@
         ]
     },
     "logs": {
-        "text": "dist\/infection-log.txt"
+        "text": "infection.log"
     }
 }

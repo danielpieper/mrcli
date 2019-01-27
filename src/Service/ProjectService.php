@@ -5,17 +5,18 @@ namespace DanielPieper\MergeReminder\Service;
 use DanielPieper\MergeReminder\Exception\ProjectNotFoundException;
 use DanielPieper\MergeReminder\ValueObject\Project;
 use DanielPieper\MergeReminder\ValueObject\User;
+use Gitlab\Client;
 use Gitlab\ResultPager;
 
 class ProjectService
 {
-    /** @var \Gitlab\Client */
+    /** @var Client */
     private $gitlabClient;
 
     /** @var ResultPager */
     private $resultPager;
 
-    public function __construct(\Gitlab\Client $gitlabClient, ResultPager $resultPager)
+    public function __construct(Client $gitlabClient, ResultPager $resultPager)
     {
         $this->gitlabClient = $gitlabClient;
         $this->resultPager = $resultPager;

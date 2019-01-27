@@ -42,12 +42,14 @@ class SlackServiceProvider extends AbstractServiceProvider implements BootableSe
         }
 
         $container->share(Client::class)
-            ->addArgument('SLACK_WEBHOOK_URL')
-            ->addArgument([
-                'username' => 'Friendly Merge Reminder',
-                'icon' => ':owl:',
-                'channel' => $container->get('SLACK_CHANNEL'),
-                'allow_markdown' => true,
+            ->addArguments([
+                'SLACK_WEBHOOK_URL',
+                [
+                    'username' => 'Friendly Merge Reminder',
+                    'icon' => ':owl:',
+                    'channel' => $container->get('SLACK_CHANNEL'),
+                    'allow_markdown' => true,
+                ],
             ]);
 
         $container->share(SlackService::class)

@@ -10,6 +10,8 @@ use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\UserService;
+use Gitlab\Client;
+use GitLab\ResultPager;
 use League\Container\Container;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -19,14 +21,14 @@ class AppServiceProvider extends AbstractServiceProvider
      * {@inheritdoc}
      */
     protected $provides = [
-        MergeRequestService::class,
         MergeRequestApprovalService::class,
         ProjectService::class,
+        MergeRequestService::class,
         UserService::class,
+        MergeRequestApprovalFilter::class,
         OverviewCommand::class,
         ProjectCommand::class,
         ApproverCommand::class,
-        MergeRequestApprovalFilter::class,
     ];
 
     /**
@@ -38,36 +40,47 @@ class AppServiceProvider extends AbstractServiceProvider
         $container = $this->getContainer();
 
         $container->share(MergeRequestApprovalService::class)
-            ->addArgument(\Gitlab\Client::class);
+            ->addArgument(Client::class);
 
         $container->share(ProjectService::class)
-            ->addArgument(\Gitlab\Client::class);
+            ->addArguments([
+                Client::class,
+                ResultPager::class,
+            ]);
 
         $container->share(MergeRequestService::class)
-            ->addArgument(\Gitlab\Client::class)
-            ->addArgument(\GitLab\ResultPager::class);
+            ->addArguments([
+                Client::class,
+                ResultPager::class,
+            ]);
 
         $container->share(UserService::class)
-            ->addArgument(\Gitlab\Client::class);
+            ->addArgument(Client::class);
 
         $container->share(MergeRequestApprovalFilter::class);
 
         $container->share(OverviewCommand::class)
-            ->addArgument(ProjectService::class)
-            ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class);
+            ->addArguments([
+                ProjectService::class,
+                MergeRequestService::class,
+                MergeRequestApprovalService::class,
+            ]);
 
         $container->share(ProjectCommand::class)
-            ->addArgument(ProjectService::class)
-            ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class)
-            ->addArgument(MergeRequestApprovalFilter::class);
+            ->addArguments([
+                ProjectService::class,
+                MergeRequestService::class,
+                MergeRequestApprovalService::class,
+                MergeRequestApprovalFilter::class,
+            ]);
 
         $container->share(ApproverCommand::class)
-            ->addArgument(ProjectService::class)
-            ->addArgument(UserService::class)
-            ->addArgument(MergeRequestService::class)
-            ->addArgument(MergeRequestApprovalService::class)
-            ->addArgument(MergeRequestApprovalFilter::class);
+            ->addArguments([
+                ProjectService::class,
+                UserService::class,
+                MergeRequestService::class,
+                MergeRequestApprovalService::class,
+                MergeRequestApprovalFilter::class,
+            ]);
     }
 }
