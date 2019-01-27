@@ -32,7 +32,6 @@ class GitlabServiceProvider extends AbstractServiceProvider implements BootableS
         CachePlugin::class,
         Builder::class,
         Client::class,
-        ResultPager::class,
     ];
 
     /**
@@ -40,36 +39,11 @@ class GitlabServiceProvider extends AbstractServiceProvider implements BootableS
      */
     public function register()
     {
-    }
-
-    /**
-     * Method will be invoked on registration of a service provider implementing
-     * this interface. Provides ability for eager loading of Service Providers.
-     *
-     * @return void
-     */
-    public function boot()
-    {
         /** @var Container $container */
         $container = $this->getContainer();
 
-        $container->share(OutputInterface::class, ConsoleOutput::class);
-
-        $container->share(LoggerInterface::class, ConsoleLogger::class)
-            ->addArgument(OutputInterface::class);
-
-        $container->inflector(LoggerAwareInterface::class)
-            ->invokeMethod('setLogger', [LoggerInterface::class]);
-
         $container->share(LoggerPlugin::class)
             ->addArgument(LoggerInterface::class);
-
-        $container->share(CacheItemPoolInterface::class, FilesystemAdapter::class)
-            ->addArguments([
-                'namespace' => 'mrcli',
-                'defaultLifetime' => 0,
-                'directory' => null,
-            ]);
 
         $container->share(CachePlugin::class)
             ->addArguments([
@@ -95,5 +69,32 @@ class GitlabServiceProvider extends AbstractServiceProvider implements BootableS
 
         $container->share(ResultPager::class)
             ->addArgument(Client::class);
+    }
+
+    /**
+     * Method will be invoked on registration of a service provider implementing
+     * this interface. Provides ability for eager loading of Service Providers.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        /** @var Container $container */
+        $container = $this->getContainer();
+
+        $container->share(OutputInterface::class, ConsoleOutput::class);
+
+        $container->share(LoggerInterface::class, ConsoleLogger::class)
+            ->addArgument(OutputInterface::class);
+
+        $container->inflector(LoggerAwareInterface::class)
+            ->invokeMethod('setLogger', [LoggerInterface::class]);
+
+        $container->share(CacheItemPoolInterface::class, FilesystemAdapter::class)
+            ->addArguments([
+                'namespace' => 'mrcli',
+                'defaultLifetime' => 0,
+                'directory' => null,
+            ]);
     }
 }
