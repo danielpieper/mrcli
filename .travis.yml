@@ -9,9 +9,9 @@ cache:
 matrix:
   include:
     - php: '7.1'
-      env: COVERAGE='true'
+      env: COVERAGE='false'
     - php: '7.2'
-      env: COVERAGE='true'
+      env: COVERAGE='false'
     - php: '7.3'
       env: COVERAGE='true'
     - php: nightly
@@ -30,9 +30,9 @@ install:
 script:
   - |
     if [ "$COVERAGE" == "true" ]; then
-        make tc
+        composer coverage
     else
-        make test
+        composer test
     fi
 notifications:
   email: false
