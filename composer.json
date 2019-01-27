@@ -41,7 +41,7 @@
     "ext-iconv": "*",
     "ext-curl": "*",
     "symfony/console": "^4.0.4",
-    "php-http/curl-client": "^1.7",
+    "php-http/guzzle6-adapter": "^1.0",
     "m4tthumphrey/php-gitlab-api": "^9.11",
     "nesbot/carbon": "^2.7",
     "league/container": "^3.2",
