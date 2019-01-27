@@ -2,16 +2,13 @@
 
 namespace DanielPieper\MergeReminder\ServiceProvider;
 
-use DanielPieper\MergeReminder\Command\ApproverCommand;
-use DanielPieper\MergeReminder\Command\OverviewCommand;
-use DanielPieper\MergeReminder\Command\ProjectCommand;
 use DanielPieper\MergeReminder\Filter\MergeRequestApprovalFilter;
 use DanielPieper\MergeReminder\Service\MergeRequestApprovalService;
 use DanielPieper\MergeReminder\Service\MergeRequestService;
 use DanielPieper\MergeReminder\Service\ProjectService;
 use DanielPieper\MergeReminder\Service\UserService;
 use Gitlab\Client;
-use GitLab\ResultPager;
+use Gitlab\ResultPager;
 use League\Container\Container;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -21,14 +18,12 @@ class AppServiceProvider extends AbstractServiceProvider
      * {@inheritdoc}
      */
     protected $provides = [
+        ResultPager::class,
         MergeRequestApprovalService::class,
         ProjectService::class,
         MergeRequestService::class,
         UserService::class,
         MergeRequestApprovalFilter::class,
-        OverviewCommand::class,
-        ProjectCommand::class,
-        ApproverCommand::class,
     ];
 
     /**
@@ -38,6 +33,9 @@ class AppServiceProvider extends AbstractServiceProvider
     {
         /** @var Container $container */
         $container = $this->getContainer();
+
+        $container->share(ResultPager::class)
+            ->addArgument(Client::class);
 
         $container->share(MergeRequestApprovalService::class)
             ->addArgument(Client::class);
@@ -58,29 +56,5 @@ class AppServiceProvider extends AbstractServiceProvider
             ->addArgument(Client::class);
 
         $container->share(MergeRequestApprovalFilter::class);
-
-        $container->share(OverviewCommand::class)
-            ->addArguments([
-                ProjectService::class,
-                MergeRequestService::class,
-                MergeRequestApprovalService::class,
-            ]);
-
-        $container->share(ProjectCommand::class)
-            ->addArguments([
-                ProjectService::class,
-                MergeRequestService::class,
-                MergeRequestApprovalService::class,
-                MergeRequestApprovalFilter::class,
-            ]);
-
-        $container->share(ApproverCommand::class)
-            ->addArguments([
-                ProjectService::class,
-                UserService::class,
-                MergeRequestService::class,
-                MergeRequestApprovalService::class,
-                MergeRequestApprovalFilter::class,
-            ]);
     }
 }

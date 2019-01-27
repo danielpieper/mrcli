@@ -19,6 +19,7 @@ $container
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\ConfigurationServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\GitlabServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\SlackServiceProvider::class)
+    ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\CommandServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\AppServiceProvider::class);
 
 $app = new Application('mrcli', '1.0.0');

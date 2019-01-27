@@ -4,7 +4,6 @@ namespace DanielPieper\MergeReminder\ServiceProvider;
 
 use Gitlab\Client;
 use Gitlab\HttpClient\Builder;
-use Gitlab\ResultPager;
 use Http\Client\Common\Plugin\CachePlugin;
 use Http\Client\Common\Plugin\LoggerPlugin;
 use Http\Discovery\StreamFactoryDiscovery;
@@ -66,9 +65,6 @@ class GitlabServiceProvider extends AbstractServiceProvider implements BootableS
                 'GITLAB_TOKEN',
                 Client::AUTH_URL_TOKEN,
             ]);
-
-        $container->share(ResultPager::class)
-            ->addArgument(Client::class);
     }
 
     /**
