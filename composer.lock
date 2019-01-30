@@ -1714,7 +1714,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -1921,16 +1921,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.3.0",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6"
+                "reference": "22165d04b0a047abbfe35fd7b10e7707ad9efe5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/21c540a936c0185ac4148988be3ead7f39069ae6",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/22165d04b0a047abbfe35fd7b10e7707ad9efe5b",
+                "reference": "22165d04b0a047abbfe35fd7b10e7707ad9efe5b",
                 "shasum": ""
             },
             "require": {
@@ -1969,7 +1969,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-01-26T16:57:11+00:00"
+            "time": "2019-01-29T11:15:07+00:00"
         }
     ],
     "packages-dev": [
