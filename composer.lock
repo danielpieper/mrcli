@@ -377,22 +377,22 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.10.1",
+            "version": "2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "39a8ebfffc2a75de9d2ade3f0e12c7e11669f7ce"
+                "reference": "48d211435ecb3671a2237614dc19fc2be185acb6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/39a8ebfffc2a75de9d2ade3f0e12c7e11669f7ce",
-                "reference": "39a8ebfffc2a75de9d2ade3f0e12c7e11669f7ce",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/48d211435ecb3671a2237614dc19fc2be185acb6",
+                "reference": "48d211435ecb3671a2237614dc19fc2be185acb6",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": "^7.1.8",
-                "symfony/translation": "^4.0"
+                "symfony/translation": "^3.4 || ^4.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.14 || ^3.0",
@@ -432,7 +432,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-01-14T09:25:45+00:00"
+            "time": "2019-01-29T16:35:35+00:00"
         },
         {
             "name": "php-http/cache-plugin",
@@ -1714,7 +1714,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
