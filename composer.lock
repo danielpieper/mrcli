@@ -1921,16 +1921,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.3.0",
+            "version": "v3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6"
+                "reference": "1ee9369cfbf26cfcf1f2515d98f15fab54e9647a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/21c540a936c0185ac4148988be3ead7f39069ae6",
-                "reference": "21c540a936c0185ac4148988be3ead7f39069ae6",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/1ee9369cfbf26cfcf1f2515d98f15fab54e9647a",
+                "reference": "1ee9369cfbf26cfcf1f2515d98f15fab54e9647a",
                 "shasum": ""
             },
             "require": {
@@ -1969,7 +1969,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-01-26T16:57:11+00:00"
+            "time": "2019-01-30T10:43:17+00:00"
         }
     ],
     "packages-dev": [
