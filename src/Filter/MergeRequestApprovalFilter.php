@@ -102,7 +102,7 @@ class MergeRequestApprovalFilter
      */
     public function isAssignee(MergeRequestApproval $mergeRequestApproval): bool
     {
-        if (!$this->user) {
+        if (!$this->user || !$mergeRequestApproval->getMergeRequest()->getAssignee()) {
             return false;
         }
         return $mergeRequestApproval->getMergeRequest()->getAssignee()->getUsername() == $this->user->getUsername();
