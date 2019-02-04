@@ -129,19 +129,9 @@ class SlackServiceTest extends TestCase
         $method = $this->getMethod($service, 'getFields');
         $actual = $method->invoke($service, $mergeRequestsApproval);
 
-        $this->assertArraySubset([
-            [
-                'title' => 'Created',
-            ],
-            [
-                'title' => 'Updated',
-            ],
-            [
-                'title' => 'Approvers',
-            ],
-            [
-                'title' => 'Approver Groups',
-            ],
-        ], $actual);
+        $this->assertEquals($actual[0]['title'], 'Created');
+        $this->assertEquals($actual[1]['title'], 'Updated');
+        $this->assertEquals($actual[2]['title'], 'Approvers');
+        $this->assertEquals($actual[3]['title'], 'Approver Groups');
     }
 }
