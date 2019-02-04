@@ -1403,16 +1403,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v4.2.2",
+            "version": "v4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "dd223d4bb9a2f9a4b4992851800b349739c40860"
+                "reference": "7c5b85bcc5f87dd7938123be12ce3323be6cde5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/dd223d4bb9a2f9a4b4992851800b349739c40860",
-                "reference": "dd223d4bb9a2f9a4b4992851800b349739c40860",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/7c5b85bcc5f87dd7938123be12ce3323be6cde5a",
+                "reference": "7c5b85bcc5f87dd7938123be12ce3323be6cde5a",
                 "shasum": ""
             },
             "require": {
@@ -1476,7 +1476,7 @@
                 "caching",
                 "psr6"
             ],
-            "time": "2019-01-03T09:07:35+00:00"
+            "time": "2019-01-31T15:08:08+00:00"
         },
         {
             "name": "symfony/console",
@@ -1861,16 +1861,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v4.2.2",
+            "version": "v4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "51bd782120fa2bfed89452f142d2a47c4b51101c"
+                "reference": "d8bf4424c232b55f4c1816037d3077a89258557e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/51bd782120fa2bfed89452f142d2a47c4b51101c",
-                "reference": "51bd782120fa2bfed89452f142d2a47c4b51101c",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/d8bf4424c232b55f4c1816037d3077a89258557e",
+                "reference": "d8bf4424c232b55f4c1816037d3077a89258557e",
                 "shasum": ""
             },
             "require": {
@@ -1917,7 +1917,7 @@
                 "instantiate",
                 "serialize"
             ],
-            "time": "2019-01-03T09:09:06+00:00"
+            "time": "2019-01-16T20:35:37+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
