@@ -17,13 +17,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 $container = new \League\Container\Container();
 $container
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\ConfigurationServiceProvider::class)
+    ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\BaseServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\GitlabServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\SlackServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\CommandServiceProvider::class)
     ->addServiceProvider(\DanielPieper\MergeReminder\ServiceProvider\AppServiceProvider::class);
 
 $app = new Application('mrcli', '1.0.0');
-$app->add($container->get(OverviewCommand::class));
-$app->add($container->get(ProjectCommand::class));
-$app->add($container->get(ApproverCommand::class));
+$app->addCommands([
+    $container->get(OverviewCommand::class),
+    $container->get(ProjectCommand::class),
+    $container->get(ApproverCommand::class),
+]);
 $app->run(null, $container->get(OutputInterface::class));
