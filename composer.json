@@ -34,7 +34,8 @@
     "fzaninotto/faker": "^1.7",
     "squizlabs/php_codesniffer": "^3.2.2",
     "phpmd/phpmd": "^2.6.0",
-    "sebastian/phpcpd": "^4.0.0"
+    "sebastian/phpcpd": "^4.0.0",
+    "php-http/mock-client": "^1.2"
   },
   "require": {
     "php": "^7.2",

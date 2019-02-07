@@ -1,0 +1,19 @@
+{
+    "id": 1,
+    "iid": 1,
+    "project_id": 1,
+    "title": "test merge request",
+    "description": "test merge request",
+    "state": "open",
+    "created_at": "2019-02-06T22:15:11.088+01:00",
+    "updated_at": "2019-02-06T22:16:46.929+01:00",
+    "merge_status": "can_be_merged",
+    "approvals_required": 1,
+    "approvals_left": 1,
+    "approved_by": [],
+    "suggested_approvers": [],
+    "approvers": [],
+    "approver_groups": [],
+    "user_has_approved": false,
+    "user_can_approve": true
+}
