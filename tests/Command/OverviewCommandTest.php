@@ -15,6 +15,7 @@ class OverviewCommandTest extends ApplicationTestCase
         $httpClient->addResponse($this->createResponse('mergerequests.json'));
         $httpClient->addResponse($this->createResponse('mergerequest-approval1.json'));
         $httpClient->addResponse($this->createResponse('mergerequest-approval2.json'));
+        $httpClient->addResponse($this->createResponse('mergerequest-approval3.json'));
 
         $command = $this->application->find('overview');
         $commandTester = new CommandTester($command);
@@ -27,8 +28,8 @@ class OverviewCommandTest extends ApplicationTestCase
 +----------------+-------+--------------+
 | Approver       | Total | Test Project |
 +----------------+-------+--------------+
-| test.approver3 | 2     | 2            |
-| test.approver4 | 1     | 1            |
+| test.approver3 | 3     | 3            |
+| test.approver4 | 2     | 2            |
 +----------------+-------+--------------+
 
 EXP;
