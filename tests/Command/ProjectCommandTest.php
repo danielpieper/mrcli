@@ -7,6 +7,7 @@ use DanielPieper\MergeReminder\Exception\ProjectNotFoundException;
 use DanielPieper\MergeReminder\Tests\ApplicationTestCase;
 use GuzzleHttp\Psr7\Response;
 use Http\Client\HttpClient;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ProjectCommandTest extends ApplicationTestCase
@@ -25,7 +26,7 @@ class ProjectCommandTest extends ApplicationTestCase
         $commandTester->execute([
             'command' => $command->getName(),
             'names' => ['Test Project'],
-        ]);
+        ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
         $actual = $commandTester->getDisplay();
         $expected = <<<EXP
@@ -34,13 +35,16 @@ class ProjectCommandTest extends ApplicationTestCase
 test.author
 [Test Project] test merge request 1
 https://example.org/test/test-project/merge_requests/1
+this is a test merge request
  Created:             3w ago         
+ Updated:             1w ago         
  Approvers:           test.approver3 
  Suggested approvers: test.approver4 
 
 test.author2
 [Test Project] test merge request 2
 https://example.org/test/test-project/merge_requests/2
+this is a test merge request #2
  Created:             2d ago                         
  Approvers:           test.approver3, test.approver4 
  Suggested approvers: test.approver1, test.approver2 
@@ -48,6 +52,7 @@ https://example.org/test/test-project/merge_requests/2
 test.author2
 [Test Project] test merge request 3
 https://example.org/test/test-project/merge_requests/3
+this is a test merge request #3
  Created:             8h ago                         
  Approvers:           test.approver3, test.approver4 
  Suggested approvers: test.approver1, test.approver2 
