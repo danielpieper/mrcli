@@ -22,9 +22,6 @@ class MergeRequest
     private $description;
 
     /** @var string */
-    private $state;
-
-    /** @var string */
     private $webUrl;
 
     /** @var bool */
@@ -45,7 +42,6 @@ class MergeRequest
      * @param int $iid
      * @param string $title
      * @param string $description
-     * @param string $state
      * @param string $webUrl
      * @param bool $isWorkInProgress
      * @param Project $project
@@ -59,7 +55,6 @@ class MergeRequest
         int $iid,
         string $title,
         string $description,
-        string $state,
         string $webUrl,
         bool $isWorkInProgress,
         Project $project,
@@ -70,7 +65,6 @@ class MergeRequest
         $this->iid = $iid;
         $this->title = $title;
         $this->description = $description;
-        $this->state = $state;
         $this->webUrl = $webUrl;
         $this->isWorkInProgress = $isWorkInProgress;
         $this->project = $project;
@@ -89,7 +83,6 @@ class MergeRequest
             (int)$mergeRequest['iid'],
             (string)$mergeRequest['title'],
             (string)$mergeRequest['description'],
-            (string)$mergeRequest['state'],
             (string)$mergeRequest['web_url'],
             (bool)$mergeRequest['work_in_progress'],
             $mergeRequest['project'],
@@ -128,46 +121,6 @@ class MergeRequest
     public function getDescription(): string
     {
         return $this->description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOpened(): bool
-    {
-        return $this->state === self::STATE_OPENED;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isClosed(): bool
-    {
-        return $this->state === self::STATE_CLOSED;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLocked(): bool
-    {
-        return $this->state === self::STATE_LOCKED;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isMerged(): bool
-    {
-        return $this->state === self::STATE_MERGED;
     }
 
     /**
