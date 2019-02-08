@@ -29,7 +29,7 @@ class ProjectCommandTest extends ApplicationTestCase
 test.author
 [Test Project] test merge request 1
 https://example.org/test/test-project/merge_requests/1
- Created:             15h ago        
+ Created:             3w ago         
  Approvers:           test.approver3 
  Suggested approvers: test.approver4 
 

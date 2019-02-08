@@ -2,6 +2,7 @@
 
 namespace DanielPieper\MergeReminder\Tests;
 
+use Carbon\Carbon;
 use DanielPieper\MergeReminder\Command\ApproverCommand;
 use DanielPieper\MergeReminder\Command\OverviewCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
@@ -36,6 +37,9 @@ class ApplicationTestCase extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $knownDate = Carbon::create(2019, 3, 1, 1);
+        Carbon::setTestNow($knownDate);
 
         $this->container = new Container();
         $this->container->share(OutputInterface::class, ConsoleOutput::class);
