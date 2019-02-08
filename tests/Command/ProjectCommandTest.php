@@ -2,7 +2,10 @@
 
 namespace DanielPieper\MergeReminder\Tests\Service;
 
+use DanielPieper\MergeReminder\Exception\MergeRequestNotFoundException;
+use DanielPieper\MergeReminder\Exception\ProjectNotFoundException;
 use DanielPieper\MergeReminder\Tests\ApplicationTestCase;
+use GuzzleHttp\Psr7\Response;
 use Http\Client\HttpClient;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -36,5 +39,40 @@ https://example.org/test/test-project/merge_requests/1
 
 EXP;
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testNoPendingMergeRequests()
+    {
+        $httpClient = $this->container->get(HttpClient::class);
+        $httpClient->addResponse($this->createResponse('projects.json'));
+        $httpClient->addResponse(new Response(
+            200,
+            ['Content-type' => 'application/json'],
+            '[]'
+        ));
+
+        $command = $this->application->find('project');
+        $commandTester = new CommandTester($command);
+
+        $this->expectException(MergeRequestNotFoundException::class);
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'names' => ['Test Project'],
+        ]);
+    }
+
+    public function testProjectNotFound()
+    {
+        $httpClient = $this->container->get(HttpClient::class);
+        $httpClient->addResponse($this->createResponse('projects.json'));
+
+        $command = $this->application->find('project');
+        $commandTester = new CommandTester($command);
+
+        $this->expectException(ProjectNotFoundException::class);
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'names' => ['does-not-exist'],
+        ]);
     }
 }
