@@ -70,7 +70,6 @@ class UserServiceTest extends TestCase
             ->with([
                 'username' => $expectedUser->getUsername(),
                 'active' => true,
-                'blocked' => false,
             ])
             ->willReturn([$user]);
 
@@ -97,7 +96,6 @@ class UserServiceTest extends TestCase
             ->with([
                 'username' => $username,
                 'active' => true,
-                'blocked' => false,
             ])
             ->willReturn(null);
 
