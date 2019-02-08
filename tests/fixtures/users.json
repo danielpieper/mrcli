@@ -1,0 +1,26 @@
+[
+  {
+    "id": 13,
+    "name": "Approver 3",
+    "username": "test.approver3",
+    "state": "active",
+    "avatar_url": "https://example.org/uploads/-/system/user/avatar/13/avatar.png",
+    "web_url": "https://example.org/test-approver3"
+  },
+  {
+    "id": 14,
+    "name": "Approver 4",
+    "username": "test.approver4",
+    "state": "active",
+    "avatar_url": "https://example.org/uploads/-/system/user/avatar/14/avatar.png",
+    "web_url": "https://example.org/test-approver4"
+  },
+  {
+    "id": 15,
+    "name": "Approver 5",
+    "username": "test.approver5",
+    "state": "active",
+    "avatar_url": "https://example.org/uploads/-/system/user/avatar/15/avatar.png",
+    "web_url": "https://example.org/test-approver5"
+  }
+]

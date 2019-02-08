@@ -89,7 +89,7 @@ class UserService
      */
     public function all(string $username = null): array
     {
-        $parameters = ['active' => true, 'blocked' => false];
+        $parameters = ['active' => true];
         if ($username) {
             $parameters['username'] = $username;
         }
