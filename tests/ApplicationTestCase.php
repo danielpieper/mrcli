@@ -7,6 +7,7 @@ use DanielPieper\MergeReminder\Command\ApproverCommand;
 use DanielPieper\MergeReminder\Command\OverviewCommand;
 use DanielPieper\MergeReminder\Command\ProjectCommand;
 use DanielPieper\MergeReminder\ServiceProvider\AppServiceProvider;
+use DanielPieper\MergeReminder\ServiceProvider\BaseServiceProvider;
 use DanielPieper\MergeReminder\ServiceProvider\CommandServiceProvider;
 use DanielPieper\MergeReminder\ServiceProvider\ConfigurationServiceProvider;
 use DanielPieper\MergeReminder\ServiceProvider\GitlabServiceProvider;
@@ -16,12 +17,8 @@ use Http\Client\HttpClient;
 use Http\Mock\Client;
 use League\Container\Container;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Logger\ConsoleLogger;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class ApplicationTestCase extends TestCase
 {
@@ -42,9 +39,7 @@ class ApplicationTestCase extends TestCase
         Carbon::setTestNow($knownDate);
 
         $this->container = new Container();
-        $this->container->share(OutputInterface::class, ConsoleOutput::class);
-        $this->container->share(LoggerInterface::class, ConsoleLogger::class)
-            ->addArgument(OutputInterface::class);
+        $this->container->addServiceProvider(BaseServiceProvider::class);
 
         // Mock http requests
         $this->container->share(HttpClient::class, Client::class);

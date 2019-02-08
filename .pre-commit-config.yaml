@@ -20,7 +20,7 @@
     args: ['src/']
   - id: phpunit
     name: 'PHP Unit Tests'
-    files: ^tests/.*\.(php)$
+    files: ^tests/.*Test\.php$
     entry: vendor/bin/phpunit
     language: script
     args: ['-c', 'phpunit.xml', '--no-coverage']
