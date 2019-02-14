@@ -38,7 +38,7 @@
     "php-http/mock-client": "^1.2"
   },
   "require": {
-    "php": "^7.2",
+    "php": "^7.1",
     "ext-iconv": "*",
     "ext-curl": "*",
     "symfony/console": "^4.0.4",
